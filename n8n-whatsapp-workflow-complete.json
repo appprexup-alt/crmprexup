@@ -1,0 +1,1284 @@
+{
+    "name": "WhatsApp CRM AI - Full Support",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "whatsapp-webhook",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "webhook",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                200,
+                400
+            ],
+            "webhookId": "whatsapp-webhook"
+        },
+        {
+            "parameters": {
+                "amount": 1
+            },
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1.1,
+            "position": [
+                360,
+                400
+            ],
+            "id": "wait1",
+            "name": "Wait",
+            "webhookId": "wait-webhook"
+        },
+        {
+            "parameters": {
+                "jsCode": "const input = $input.first().json;\nconst body = input.body || input;\nconst data = body.data || body;\nconst message = data.message || {};\nconst key = data.key || {};\n\nconst instance_server_url = body.server_url || '';\nconst instance_name = body.instance || '';\nconst instance_apikey = body.apikey || '';\nconst message_id = key.id || '';\nconst user_number = key.remoteJid || body.sender || '';\nconst phone = user_number.replace('@s.whatsapp.net', '').replace('@g.us', '');\nconst pushName = data.pushName || body.pushName || '';\nconst direction = key.fromMe ? 'outbound' : 'inbound';\n\nlet message_content_type = 'text';\nlet message_content = '';\n\nif (message.audioMessage) {\n  message_content_type = 'audio';\n  message_content = 'Audio';\n} else if (message.imageMessage) {\n  message_content_type = 'image';\n  message_content = message.imageMessage.caption || 'Imagen';\n} else if (message.videoMessage) {\n  message_content_type = 'video';\n  message_content = message.videoMessage.caption || 'Video';\n} else if (message.extendedTextMessage) {\n  message_content_type = 'text';\n  message_content = message.extendedTextMessage.text || '';\n} else if (message.conversation) {\n  message_content_type = 'text';\n  message_content = message.conversation || '';\n}\n\nconst safeName = pushName ? String(pushName).replace(/'/g, \"''\").substring(0, 100) : 'WA ' + phone;\nconst safeContent = String(message_content).replace(/'/g, \"''\").substring(0, 1000);\nconst containsKeyword = safeContent.toLowerCase().includes('alquimia');\n\nreturn [{\n  json: {\n    instance_server_url,\n    instance_name,\n    instance_apikey,\n    message_id,\n    message_content_type,\n    message_content: safeContent,\n    user_number,\n    user_name: safeName,\n    phone,\n    direction,\n    lead_name: safeName,\n    contains_keyword: containsKeyword\n  }\n}];"
+            },
+            "id": "normalize",
+            "name": "Normalizacion",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                520,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, chatbot_enabled FROM leads WHERE phone = '{{ $json.phone }}' LIMIT 1",
+                "options": {}
+            },
+            "id": "checkleadstatus",
+            "name": "Check Lead Status",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                700,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const normData = $('Normalizacion').first().json;\nconst leadResult = $input.first().json;\n\nconst containsKeyword = normData.contains_keyword || false;\nconst chatbotEnabled = leadResult.chatbot_enabled || false;\nconst leadExists = leadResult.id ? true : false;\nconst shouldProceed = containsKeyword || chatbotEnabled;\n\nreturn [{\n  json: {\n    ...normData,\n    lead_exists: leadExists,\n    existing_lead_id: leadResult.id || null,\n    chatbot_was_enabled: chatbotEnabled,\n    should_proceed: shouldProceed,\n    activate_chatbot: containsKeyword && !chatbotEnabled\n  }\n}];"
+            },
+            "id": "evaluateaccess",
+            "name": "Evaluate Access",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                880,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json.should_proceed }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "id": "filtroconversacion",
+            "name": "Filtro Conversacion",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                1060,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "rules": {
+                    "values": [
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message_content_type }}",
+                                        "rightValue": "audio",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Audio"
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message_content_type }}",
+                                        "rightValue": "image",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Imagen"
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message_content_type }}",
+                                        "rightValue": "text",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Texto"
+                        }
+                    ]
+                },
+                "options": {
+                    "fallbackOutput": "extra",
+                    "renameFallbackOutput": "Otro"
+                }
+            },
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 3.2,
+            "position": [
+                1240,
+                400
+            ],
+            "id": "switch",
+            "name": "Switch"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Evaluate Access').item.json.instance_server_url }}/chat/getBase64FromMediaMessage/{{ $('Evaluate Access').item.json.instance_name }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "apikey",
+                            "value": "={{ $('Evaluate Access').item.json.instance_apikey }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "message.key.id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}"
+                        },
+                        {
+                            "name": "convertToMp4",
+                            "value": "={{ Boolean(false) }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1440,
+                200
+            ],
+            "id": "getaudio",
+            "name": "Get Audio"
+        },
+        {
+            "parameters": {
+                "operation": "toBinary",
+                "sourceProperty": "base64",
+                "options": {
+                    "mimeType": "={{ $json.mimetype }}"
+                }
+            },
+            "type": "n8n-nodes-base.convertToFile",
+            "typeVersion": 1.1,
+            "position": [
+                1620,
+                200
+            ],
+            "id": "convertaudio",
+            "name": "Convertir Audio"
+        },
+        {
+            "parameters": {
+                "resource": "audio",
+                "operation": "transcribe",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.openAi",
+            "typeVersion": 1.8,
+            "position": [
+                1800,
+                200
+            ],
+            "id": "transcribe",
+            "name": "Transcribir",
+            "credentials": {
+                "openAiApi": {
+                    "id": "gYGyxfOKDAAf2esW",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "a1",
+                            "name": "final_content",
+                            "value": "={{ $json.text }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a2",
+                            "name": "phone",
+                            "value": "={{ $('Evaluate Access').item.json.phone }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a3",
+                            "name": "lead_name",
+                            "value": "={{ $('Evaluate Access').item.json.lead_name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a4",
+                            "name": "direction",
+                            "value": "={{ $('Evaluate Access').item.json.direction }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a5",
+                            "name": "message_id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a6",
+                            "name": "activate_chatbot",
+                            "value": "={{ $('Evaluate Access').item.json.activate_chatbot }}",
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                1980,
+                200
+            ],
+            "id": "setaudio",
+            "name": "Set Audio Content"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Evaluate Access').item.json.instance_server_url }}/chat/getBase64FromMediaMessage/{{ $('Evaluate Access').item.json.instance_name }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "apikey",
+                            "value": "={{ $('Evaluate Access').item.json.instance_apikey }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "message.key.id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}"
+                        },
+                        {
+                            "name": "convertToMp4",
+                            "value": "={{ Boolean(false) }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1440,
+                400
+            ],
+            "id": "getimage",
+            "name": "Get Image"
+        },
+        {
+            "parameters": {
+                "operation": "toBinary",
+                "sourceProperty": "base64",
+                "options": {
+                    "mimeType": "={{ $json.mimetype }}"
+                }
+            },
+            "type": "n8n-nodes-base.convertToFile",
+            "typeVersion": 1.1,
+            "position": [
+                1620,
+                400
+            ],
+            "id": "convertimage",
+            "name": "Convertir Imagen"
+        },
+        {
+            "parameters": {
+                "resource": "image",
+                "operation": "analyze",
+                "modelId": {
+                    "__rl": true,
+                    "value": "gpt-4o",
+                    "mode": "list",
+                    "cachedResultName": "GPT-4O"
+                },
+                "text": "Describe esta imagen brevemente y menciona si se trata de una propiedad, terreno o algo relacionado a bienes raíces.",
+                "inputType": "base64",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.openAi",
+            "typeVersion": 1.8,
+            "position": [
+                1800,
+                400
+            ],
+            "id": "describeimage",
+            "name": "Describir Imagen",
+            "credentials": {
+                "openAiApi": {
+                    "id": "gYGyxfOKDAAf2esW",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "b1",
+                            "name": "final_content",
+                            "value": "=[IMAGEN] {{ $json.content }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b2",
+                            "name": "phone",
+                            "value": "={{ $('Evaluate Access').item.json.phone }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b3",
+                            "name": "lead_name",
+                            "value": "={{ $('Evaluate Access').item.json.lead_name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b4",
+                            "name": "direction",
+                            "value": "={{ $('Evaluate Access').item.json.direction }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b5",
+                            "name": "message_id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b6",
+                            "name": "activate_chatbot",
+                            "value": "={{ $('Evaluate Access').item.json.activate_chatbot }}",
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                1980,
+                400
+            ],
+            "id": "setimage",
+            "name": "Set Image Content"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "c1",
+                            "name": "final_content",
+                            "value": "={{ $json.message_content }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c2",
+                            "name": "phone",
+                            "value": "={{ $json.phone }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c3",
+                            "name": "lead_name",
+                            "value": "={{ $json.lead_name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c4",
+                            "name": "direction",
+                            "value": "={{ $json.direction }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c5",
+                            "name": "message_id",
+                            "value": "={{ $json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c6",
+                            "name": "activate_chatbot",
+                            "value": "={{ $json.activate_chatbot }}",
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                1440,
+                600
+            ],
+            "id": "settext",
+            "name": "Set Text Content"
+        },
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3,
+            "position": [
+                2160,
+                400
+            ],
+            "id": "merge",
+            "name": "Merge"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "WITH existing AS (\n  SELECT id FROM leads WHERE phone = '{{ $json.phone }}' LIMIT 1\n), \nnew_lead AS (\n  INSERT INTO leads (name, phone, status, source, chatbot_enabled) \n  SELECT '{{ $json.lead_name }}', '{{ $json.phone }}', 'NEW', 'whatsapp', true \n  WHERE NOT EXISTS (SELECT 1 FROM existing) \n  RETURNING id\n),\nupdate_chatbot AS (\n  UPDATE leads SET chatbot_enabled = true \n  WHERE phone = '{{ $json.phone }}' AND {{ $json.activate_chatbot }} = true\n  RETURNING id\n)\nSELECT COALESCE(\n  (SELECT id FROM existing), \n  (SELECT id FROM new_lead)\n) as lead_id",
+                "options": {}
+            },
+            "id": "createlead",
+            "name": "GetOrCreateLead",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2340,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO messages (lead_id, content, direction, type, status, whatsapp_id) VALUES ('{{ $json.lead_id }}', '{{ $('Merge').item.json.final_content }}', '{{ $('Merge').item.json.direction }}', 'text', 'received', '{{ $('Merge').item.json.message_id }}')",
+                "options": {}
+            },
+            "id": "savemsg",
+            "name": "SaveMessage",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2520,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO message_queue (phone, content, status, created_at) VALUES ('{{ $('Merge').item.json.phone }}', '{{ $('Merge').item.json.final_content }}', 'pending', NOW())",
+                "options": {}
+            },
+            "id": "insertqueue",
+            "name": "Insert to Queue",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2700,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "amount": 3,
+                "unit": "seconds"
+            },
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1.1,
+            "position": [
+                2880,
+                400
+            ],
+            "id": "waitqueue",
+            "name": "Wait 3s",
+            "webhookId": "wait-queue"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "WITH pending AS (SELECT id, content FROM message_queue WHERE phone = '{{ $('Merge').item.json.phone }}' AND status = 'pending' ORDER BY created_at), updated AS (UPDATE message_queue SET status = 'processed' WHERE id IN (SELECT id FROM pending) RETURNING id) SELECT CASE WHEN COUNT(*) > 0 THEN string_agg(content, ' | ') ELSE NULL END as merged_message, COUNT(*) as msg_count FROM pending HAVING COUNT(*) > 0",
+                "options": {}
+            },
+            "id": "getqueue",
+            "name": "Get & Merge Queue",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                3060,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "position": [
+                        3240,
+                        400
+                    ]
+                },
+                {
+                    "parameters": {
+                        "jsCode": "const queueData = $('Get & Merge Queue').first().json;\nconst mergeData = $('Merge').first().json;\nconst leadData = $('GetOrCreateLead').first().json;\n\n// Validar que haya mensajes en la cola\nif (!queueData.merged_message || queueData.msg_count === 0) {\n  throw new Error('No hay mensajes en la cola para procesar');\n}\n\nreturn [{\n  json: {\n    chat_input: queueData.merged_message,\n    session_id: mergeData.phone,\n    lead_id: leadData.lead_id\n  }\n}];"
+                    },
+                    "type": "n8n-nodes-base.code",
+                    "typeVersion": 2,
+                    "position": [
+                        3420,
+                        400
+                    ],
+                    "id": "prepareai",
+                    "name": "Prepare AI Input"
+                },
+                {
+                    "parameters": {
+                        "name": "buscar_propiedades",
+                        "description": "Busca terrenos y propiedades disponibles según criterios. Parámetros: location (texto, ej: Lima, Miraflores), min_price/max_price (número), min_area/max_area (número en m²). Siempre filtra status='disponible'. Ejemplo query: SELECT id, description, location, price, currency, area FROM properties WHERE location ILIKE '%Lima%' AND status='disponible' LIMIT 10",
+                        "operation": "executeQuery",
+                        "query": "={{ $fromAI('sql_query', 'Consulta SQL SELECT de la tabla properties. Columnas: id, description, location, price, currency, area, status. SIEMPRE incluir WHERE status=disponible. Usar ILIKE para location (case-insensitive). Usar >= para min_price, <= para max_price, >= para min_area, <= para max_area. Limitar a 10 resultados con LIMIT 10.', 'string') }}"
+                    },
+                    "type": "@n8n/n8n-nodes-langchain.toolDatabase",
+                    "typeVersion": 1,
+                    "position": [
+                        3320,
+                        620
+                    ],
+                    "id": "toolsearch",
+                    "name": "buscar_propiedades",
+                    "credentials": {
+                        "postgres": {
+                            "id": "VyG1bjMeGSJKR4Dx",
+                            "name": "PostgresPrexUp"
+                        }
+                    }
+                },
+                {
+                    "parameters": {
+                        "name": "obtener_agentes",
+                        "description": "Obtiene lista de agentes/asesores disponibles. No requiere parámetros.",
+                        "operation": "executeQuery",
+                        "query": "SELECT id, name, email, phone FROM users WHERE active = true ORDER BY name LIMIT 5"
+                    },
+                    "type": "@n8n/n8n-nodes-langchain.toolDatabase",
+                    "typeVersion": 1,
+                    "position": [
+                        3460,
+                        620
+                    ],
+                    "id": "toolagents",
+                    "name": "obtener_agentes",
+                    "credentials": {
+                        "postgres": {
+                            "id": "VyG1bjMeGSJKR4Dx",
+                            "name": "PostgresPrexUp"
+                        }
+                    }
+                },
+                {
+                    "parameters": {
+                        "name": "crear_cita",
+                        "description": "Crea una cita/visita con asignación automática de agente. Requiere: property_id (UUID de la propiedad), client_name (nombre completo), client_phone (con código país ej: 51999999999), scheduled_date (formato YYYY-MM-DD), scheduled_time (formato HH:MM en 24h). Primero obtén un agente disponible con SELECT id FROM users WHERE active=true",
+                        "operation": "executeQuery",
+                        "query": "={{ $fromAI('sql_query', 'Dos consultas SQL: 1) Primero SELECT id FROM users WHERE active=true LIMIT 1 para obtener agent_id. 2) Luego INSERT INTO appointments (property_id, agent_id, client_name, client_phone, scheduled_date, scheduled_time, status) VALUES (property_id, agent_id_obtenido, client_name, client_phone, scheduled_date::date, scheduled_time::time, agendado) RETURNING id, property_id, client_name, scheduled_date, scheduled_time, status', 'string') }}"
+                    },
+                    "type": "@n8n/n8n-nodes-langchain.toolDatabase",
+                    "typeVersion": 1,
+                    "position": [
+                        3600,
+                        620
+                    ],
+                    "id": "toolcreate",
+                    "name": "crear_cita",
+                    "credentials": {
+                        "postgres": {
+                            "id": "VyG1bjMeGSJKR4Dx",
+                            "name": "PostgresPrexUp"
+                        }
+                    }
+                },
+                {
+                    "parameters": {
+                        "promptType": "define",
+                        "text": "={{ $json.chat_input }}",
+                        "options": {
+                            "systemMessage": "Fecha y hora actual: {{ $now }}\n\n# ROL\nEres PREXA, asistente virtual inmobiliario de PrexUp. Respondes por WhatsApp a leads interesados en terrenos y propiedades.\n\n# TONO Y ESTILO\n- Profesional pero cercano (tutea al cliente)\n- Respuestas cortas (máximo 3-4 líneas)\n- Emojis con moderación: ✅ 📍 🏠 📅 📞\n- Nunca uses asteriscos ni markdown\n- Cierra con pregunta o llamado a acción\n\n# HERRAMIENTAS DISPONIBLES\n\n## buscar_propiedades\nBusca terrenos y propiedades en la base de datos.\n**Uso**: Genera un SELECT SQL con los filtros que pida el usuario.\n**Ejemplos**:\n- \"terrenos en Lima\": SELECT id, description, location, price, currency, area FROM properties WHERE location ILIKE '%Lima%' AND status='disponible' LIMIT 10\n- \"máximo 50mil dólares\": WHERE price <= 50000 AND currency='USD' AND status='disponible'\n- \"mínimo 100m²\": WHERE area >= 100 AND status='disponible'\n\n## obtener_agentes\nLista agentes disponibles. Query fijo, no requiere parámetros.\n\n## crear_cita\nCrea una cita con asignación automática de agente.\n**Proceso**:\n1. Obtener agent_id: SELECT id FROM users WHERE active=true LIMIT 1\n2. Insertar cita: INSERT INTO appointments (...) VALUES (...) RETURNING *\n\n# FLUJO DE CONVERSACIÓN\n\n## 1. Consulta de propiedades\nUsuario: \"Quiero un terreno en Lima\"\n1. Usa `buscar_propiedades` con query: SELECT... WHERE location ILIKE '%Lima%' AND status='disponible'\n2. Muestra máximo 3 opciones:\n   🏠 [Descripción]\n   📍 [Ubicación]\n   📐 [Área] m²\n   💰 [Moneda] [Precio]\n3. Pregunta: \"¿Te interesa alguno? Te puedo agendar una visita\"\n\n## 2. Agendar visita\nUsuario: \"Quiero ver el terreno en Miraflores el 25 de enero a las 10am\"\n1. Pide nombre si no lo tienes\n2. Usa `crear_cita` con los datos\n3. Confirma:\n   ✅ Visita agendada\n   📅 [Fecha] a las [Hora]\n   status: agendado\n\n# REGLAS CRÍTICAS\n- NUNCA inventes propiedades o datos\n- SIEMPRE usa las herramientas para buscar\n- Si no hay resultados, dilo honestamente\n- Para agendar necesitas: property_id, nombre, teléfono, fecha, hora\n- Si el mensaje contiene [IMAGEN], significa que el usuario envió una imagen descrita\n\n# RESPUESTAS RÁPIDAS\n- \"Hola\" → \"¡Hola! 👋 Soy PREXA de PrexUp. ¿Buscas terrenos o propiedades? Cuéntame qué zona y presupuesto tienes en mente 🏠\"\n- \"Gracias\" → \"¡Con gusto! Si tienes más dudas o quieres agendar una visita, aquí estoy 📲\""
+                        }
+                    },
+                    "type": "@n8n/n8n-nodes-langchain.agent",
+                    "typeVersion": 2,
+                    "position": [
+                        3620,
+                        400
+                    ],
+                    "id": "aiagent",
+                    "name": "AI Agent"
+                },
+                {
+                    "parameters": {
+                        "model": {
+                            "__rl": true,
+                            "value": "gpt-4o",
+                            "mode": "list",
+                            "cachedResultName": "gpt-4o"
+                        },
+                        "options": {}
+                    },
+                    "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+                    "typeVersion": 1.2,
+                    "position": [
+                        3520,
+                        620
+                    ],
+                    "id": "openaimodel",
+                    "name": "OpenAI Chat Model",
+                    "credentials": {
+                        "openAiApi": {
+                            "id": "gYGyxfOKDAAf2esW",
+                            "name": "OpenAi account"
+                        }
+                    }
+                },
+                {
+                    "parameters": {
+                        "sessionIdType": "customKey",
+                        "sessionKey": "={{ $('Prepare AI Input').item.json.session_id }}",
+                        "contextWindowLength": 20
+                    },
+                    "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+                    "typeVersion": 1.3,
+                    "position": [
+                        3660,
+                        620
+                    ],
+                    "id": "memory",
+                    "name": "Postgres Chat Memory",
+                    "credentials": {
+                        "postgres": {
+                            "id": "VyG1bjMeGSJKR4Dx",
+                            "name": "PostgresPrexUp"
+                        }
+                    }
+                },
+                {
+                    "parameters": {
+                        "jsCode": "const output = $json.output || '';\nconst leadId = $('Prepare AI Input').item.json.lead_id;\nconst safeOutput = output.replace(/'/g, \"''\");\n\nreturn [{ json: { full_response: safeOutput, lead_id: leadId, output: output } }];"
+                    },
+                    "type": "n8n-nodes-base.code",
+                    "typeVersion": 2,
+                    "position": [
+                        3820,
+                        400
+                    ],
+                    "id": "prepareresponse",
+                    "name": "Prepare Response"
+                },
+                {
+                    "parameters": {
+                        "operation": "executeQuery",
+                        "query": "INSERT INTO messages (lead_id, content, direction, type, status) VALUES ('{{ $json.lead_id }}', '{{ $json.full_response }}', 'outbound', 'text', 'sent')",
+                        "options": {}
+                    },
+                    "id": "saveairesponse",
+                    "name": "Save AI Response",
+                    "type": "n8n-nodes-base.postgres",
+                    "typeVersion": 2.5,
+                    "position": [
+                        4000,
+                        400
+                    ],
+                    "alwaysOutputData": true,
+                    "credentials": {
+                        "postgres": {
+                            "id": "VyG1bjMeGSJKR4Dx",
+                            "name": "PostgresPrexUp"
+                        }
+                    }
+                },
+                {
+                    "parameters": {
+                        "jsCode": "const output = $('Prepare Response').first().json.output || '';\nconst normData = $('Normalizacion').first().json;\n\nif (!output || output.trim() === '') {\n  return [{ json: { \n    response_text: 'Lo siento, hubo un error. ¿Puedes repetir tu mensaje?',\n    instance_server_url: normData.instance_server_url,\n    instance_name: normData.instance_name,\n    instance_apikey: normData.instance_apikey,\n    user_number: normData.user_number\n  } }];\n}\n\nconst sentences = output.split(/(?<=[.!?])\\s+/).filter(s => s.trim().length > 0);\nconst chunks = [];\nfor (let i = 0; i < sentences.length; i += 2) {\n  const chunk = sentences.slice(i, i + 2).join(' ').trim();\n  if (chunk) chunks.push(chunk);\n}\n\nif (chunks.length === 0) {\n  chunks.push(output);\n}\n\nreturn chunks.map(text => ({ \n  json: { \n    response_text: text,\n    instance_server_url: normData.instance_server_url,\n    instance_name: normData.instance_name,\n    instance_apikey: normData.instance_apikey,\n    user_number: normData.user_number\n  } \n}));"
+                    },
+                    "type": "n8n-nodes-base.code",
+                    "typeVersion": 2,
+                    "position": [
+                        4180,
+                        400
+                    ],
+                    "id": "splitresponse",
+                    "name": "Split Response"
+                },
+                {
+                    "parameters": {
+                        "options": {}
+                    },
+                    "type": "n8n-nodes-base.splitInBatches",
+                    "typeVersion": 3,
+                    "position": [
+                        4360,
+                        400
+                    ],
+                    "id": "loop",
+                    "name": "Loop Messages"
+                },
+                {
+                    "parameters": {
+                        "method": "POST",
+                        "url": "={{ $json.instance_server_url }}/message/sendText/{{ $json.instance_name }}",
+                        "sendHeaders": true,
+                        "headerParameters": {
+                            "parameters": [
+                                {
+                                    "name": "apikey",
+                                    "value": "={{ $json.instance_apikey }}"
+                                }
+                            ]
+                        },
+                        "sendBody": true,
+                        "bodyParameters": {
+                            "parameters": [
+                                {
+                                    "name": "number",
+                                    "value": "={{ $json.user_number }}"
+                                },
+                                {
+                                    "name": "text",
+                                    "value": "={{ $json.response_text }}"
+                                },
+                                {
+                                    "name": "delay",
+                                    "value": "={{ 1000 }}"
+                                }
+                            ]
+                        },
+                        "options": {}
+                    },
+                    "type": "n8n-nodes-base.httpRequest",
+                    "typeVersion": 4.2,
+                    "position": [
+                        4540,
+                        500
+                    ],
+                    "id": "sendmsg",
+                    "name": "Enviar WhatsApp"
+                }
+            ],
+            "connections": {
+                "Webhook": {
+                    "main": [
+                        [
+                            {
+                                "node": "Wait",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Wait": {
+                    "main": [
+                        [
+                            {
+                                "node": "Normalizacion",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Normalizacion": {
+                    "main": [
+                        [
+                            {
+                                "node": "Check Lead Status",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Check Lead Status": {
+                    "main": [
+                        [
+                            {
+                                "node": "Evaluate Access",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Evaluate Access": {
+                    "main": [
+                        [
+                            {
+                                "node": "Filtro Conversacion",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Filtro Conversacion": {
+                    "main": [
+                        [
+                            {
+                                "node": "Switch",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ],
+                        []
+                    ]
+                },
+                "Switch": {
+                    "main": [
+                        [
+                            {
+                                "node": "Get Audio",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ],
+                        [
+                            {
+                                "node": "Get Image",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ],
+                        [
+                            {
+                                "node": "Set Text Content",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ],
+                        [
+                            {
+                                "node": "Set Text Content",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Get Audio": {
+                    "main": [
+                        [
+                            {
+                                "node": "Convertir Audio",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Convertir Audio": {
+                    "main": [
+                        [
+                            {
+                                "node": "Transcribir",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Transcribir": {
+                    "main": [
+                        [
+                            {
+                                "node": "Set Audio Content",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Set Audio Content": {
+                    "main": [
+                        [
+                            {
+                                "node": "Merge",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Get Image": {
+                    "main": [
+                        [
+                            {
+                                "node": "Convertir Imagen",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Convertir Imagen": {
+                    "main": [
+                        [
+                            {
+                                "node": "Describir Imagen",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Describir Imagen": {
+                    "main": [
+                        [
+                            {
+                                "node": "Set Image Content",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Set Image Content": {
+                    "main": [
+                        [
+                            {
+                                "node": "Merge",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Set Text Content": {
+                    "main": [
+                        [
+                            {
+                                "node": "Merge",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Merge": {
+                    "main": [
+                        [
+                            {
+                                "node": "GetOrCreateLead",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "GetOrCreateLead": {
+                    "main": [
+                        [
+                            {
+                                "node": "SaveMessage",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "SaveMessage": {
+                    "main": [
+                        [
+                            {
+                                "node": "Insert to Queue",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Insert to Queue": {
+                    "main": [
+                        [
+                            {
+                                "node": "Wait 3s",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Wait 3s": {
+                    "main": [
+                        [
+                            {
+                                "node": "Get & Merge Queue",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Get & Merge Queue": {
+                    "main": [
+                        [
+                            {
+                                "node": "Has Messages?",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Has Messages?": {
+                    "main": [
+                        [
+                            {
+                                "node": "Prepare AI Input",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ],
+                        []
+                    ]
+                },
+                "Prepare AI Input": {
+                    "main": [
+                        [
+                            {
+                                "node": "AI Agent",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "buscar_propiedades": {
+                    "ai_tool": [
+                        [
+                            {
+                                "node": "AI Agent",
+                                "type": "ai_tool",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "obtener_agentes": {
+                    "ai_tool": [
+                        [
+                            {
+                                "node": "AI Agent",
+                                "type": "ai_tool",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "crear_cita": {
+                    "ai_tool": [
+                        [
+                            {
+                                "node": "AI Agent",
+                                "type": "ai_tool",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "OpenAI Chat Model": {
+                    "ai_languageModel": [
+                        [
+                            {
+                                "node": "AI Agent",
+                                "type": "ai_languageModel",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Postgres Chat Memory": {
+                    "ai_memory": [
+                        [
+                            {
+                                "node": "AI Agent",
+                                "type": "ai_memory",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "AI Agent": {
+                    "main": [
+                        [
+                            {
+                                "node": "Prepare Response",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Prepare Response": {
+                    "main": [
+                        [
+                            {
+                                "node": "Save AI Response",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Save AI Response": {
+                    "main": [
+                        [
+                            {
+                                "node": "Split Response",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Split Response": {
+                    "main": [
+                        [
+                            {
+                                "node": "Loop Messages",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Loop Messages": {
+                    "main": [
+                        [],
+                        [
+                            {
+                                "node": "Enviar WhatsApp",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                },
+                "Enviar WhatsApp": {
+                    "main": [
+                        [
+                            {
+                                "node": "Loop Messages",
+                                "type": "main",
+                                "index": 0
+                            }
+                        ]
+                    ]
+                }
+            },
+            "settings": {
+                "executionOrder": "v1"
+            },
+            "active": false
+        }

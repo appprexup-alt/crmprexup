@@ -1,0 +1,8 @@
+{
+  "name": "Prex CRM 1.01",
+  "description": "High-end real estate CRM for land, apartments, and houses with WhatsApp automation, sales tracking, and AI-powered insights.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

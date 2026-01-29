@@ -1,0 +1,1510 @@
+{
+    "name": "WhatsApp CRM AI - With Actions",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "whatsapp-webhook",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "webhook",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                200,
+                400
+            ],
+            "webhookId": "whatsapp-webhook"
+        },
+        {
+            "parameters": {
+                "amount": 1
+            },
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1.1,
+            "position": [
+                360,
+                400
+            ],
+            "id": "wait1",
+            "name": "Wait",
+            "webhookId": "wait-webhook"
+        },
+        {
+            "parameters": {
+                "jsCode": "const input = $input.first().json;\nconst body = input.body || input;\nconst data = body.data || body;\nconst message = data.message || {};\nconst key = data.key || {};\n\nconst instance_server_url = body.server_url || '';\nconst instance_name = body.instance || '';\nconst instance_apikey = body.apikey || '';\nconst message_id = key.id || '';\nconst user_number = key.remoteJid || body.sender || '';\nconst phone = user_number.replace('@s.whatsapp.net', '').replace('@g.us', '');\nconst pushName = data.pushName || body.pushName || '';\nconst direction = key.fromMe ? 'outbound' : 'inbound';\n\nlet message_content_type = 'text';\nlet message_content = '';\n\nif (message.audioMessage) {\n  message_content_type = 'audio';\n  message_content = 'Audio';\n} else if (message.imageMessage) {\n  message_content_type = 'image';\n  message_content = message.imageMessage.caption || 'Imagen';\n} else if (message.videoMessage) {\n  message_content_type = 'video';\n  message_content = message.videoMessage.caption || 'Video';\n} else if (message.extendedTextMessage) {\n  message_content_type = 'text';\n  message_content = message.extendedTextMessage.text || '';\n} else if (message.conversation) {\n  message_content_type = 'text';\n  message_content = message.conversation || '';\n}\n\nconst safeName = pushName ? String(pushName).replace(/'/g, \"''\").substring(0, 100) : 'WA ' + phone;\nconst safeContent = String(message_content).replace(/'/g, \"''\").substring(0, 1000);\nconst containsKeyword = safeContent.toLowerCase().includes('alquimia');\n\nreturn [{\n  json: {\n    instance_server_url,\n    instance_name,\n    instance_apikey,\n    message_id,\n    message_content_type,\n    message_content: safeContent,\n    user_number,\n    user_name: safeName,\n    phone,\n    direction,\n    lead_name: safeName,\n    contains_keyword: containsKeyword\n  }\n}];"
+            },
+            "id": "normalize",
+            "name": "Normalizacion",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                520,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, chatbot_enabled FROM leads WHERE phone = '{{ $json.phone }}' LIMIT 1",
+                "options": {}
+            },
+            "id": "checkleadstatus",
+            "name": "Check Lead Status",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                700,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const normData = $('Normalizacion').first().json;\nconst leadResult = $input.first().json;\n\nconst containsKeyword = normData.contains_keyword || false;\nconst chatbotEnabled = leadResult.chatbot_enabled || false;\nconst leadExists = leadResult.id ? true : false;\nconst shouldProceed = containsKeyword || chatbotEnabled;\n\nreturn [{\n  json: {\n    ...normData,\n    lead_exists: leadExists,\n    existing_lead_id: leadResult.id || null,\n    chatbot_was_enabled: chatbotEnabled,\n    should_proceed: shouldProceed,\n    activate_chatbot: containsKeyword && !chatbotEnabled\n  }\n}];"
+            },
+            "id": "evaluateaccess",
+            "name": "Evaluate Access",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                880,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json.should_proceed }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "id": "filtroconversacion",
+            "name": "Filtro Conversacion",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                1060,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "rules": {
+                    "values": [
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message_content_type }}",
+                                        "rightValue": "audio",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Audio"
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message_content_type }}",
+                                        "rightValue": "image",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Imagen"
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.message_content_type }}",
+                                        "rightValue": "text",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Texto"
+                        }
+                    ]
+                },
+                "options": {
+                    "fallbackOutput": "extra",
+                    "renameFallbackOutput": "Otro"
+                }
+            },
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 3.2,
+            "position": [
+                1240,
+                400
+            ],
+            "id": "switch",
+            "name": "Switch"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Evaluate Access').item.json.instance_server_url }}/chat/getBase64FromMediaMessage/{{ $('Evaluate Access').item.json.instance_name }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "apikey",
+                            "value": "={{ $('Evaluate Access').item.json.instance_apikey }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "message.key.id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}"
+                        },
+                        {
+                            "name": "convertToMp4",
+                            "value": "={{ Boolean(false) }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1440,
+                200
+            ],
+            "id": "getaudio",
+            "name": "Get Audio"
+        },
+        {
+            "parameters": {
+                "operation": "toBinary",
+                "sourceProperty": "base64",
+                "options": {
+                    "mimeType": "={{ $json.mimetype }}"
+                }
+            },
+            "type": "n8n-nodes-base.convertToFile",
+            "typeVersion": 1.1,
+            "position": [
+                1620,
+                200
+            ],
+            "id": "convertaudio",
+            "name": "Convertir Audio"
+        },
+        {
+            "parameters": {
+                "resource": "audio",
+                "operation": "transcribe",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.openAi",
+            "typeVersion": 1.8,
+            "position": [
+                1800,
+                200
+            ],
+            "id": "transcribe",
+            "name": "Transcribir",
+            "credentials": {
+                "openAiApi": {
+                    "id": "gYGyxfOKDAAf2esW",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "a1",
+                            "name": "final_content",
+                            "value": "={{ $json.text }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a2",
+                            "name": "phone",
+                            "value": "={{ $('Evaluate Access').item.json.phone }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a3",
+                            "name": "lead_name",
+                            "value": "={{ $('Evaluate Access').item.json.lead_name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a4",
+                            "name": "direction",
+                            "value": "={{ $('Evaluate Access').item.json.direction }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a5",
+                            "name": "message_id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "a6",
+                            "name": "activate_chatbot",
+                            "value": "={{ $('Evaluate Access').item.json.activate_chatbot }}",
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                1980,
+                200
+            ],
+            "id": "setaudio",
+            "name": "Set Audio Content"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Evaluate Access').item.json.instance_server_url }}/chat/getBase64FromMediaMessage/{{ $('Evaluate Access').item.json.instance_name }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "apikey",
+                            "value": "={{ $('Evaluate Access').item.json.instance_apikey }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "message.key.id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}"
+                        },
+                        {
+                            "name": "convertToMp4",
+                            "value": "={{ Boolean(false) }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1440,
+                400
+            ],
+            "id": "getimage",
+            "name": "Get Image"
+        },
+        {
+            "parameters": {
+                "operation": "toBinary",
+                "sourceProperty": "base64",
+                "options": {
+                    "mimeType": "={{ $json.mimetype }}"
+                }
+            },
+            "type": "n8n-nodes-base.convertToFile",
+            "typeVersion": 1.1,
+            "position": [
+                1620,
+                400
+            ],
+            "id": "convertimage",
+            "name": "Convertir Imagen"
+        },
+        {
+            "parameters": {
+                "resource": "image",
+                "operation": "analyze",
+                "modelId": {
+                    "__rl": true,
+                    "value": "gpt-4o",
+                    "mode": "list",
+                    "cachedResultName": "GPT-4O"
+                },
+                "text": "Describe esta imagen brevemente y menciona si se trata de una propiedad, terreno o algo relacionado a bienes raíces.",
+                "inputType": "base64",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.openAi",
+            "typeVersion": 1.8,
+            "position": [
+                1800,
+                400
+            ],
+            "id": "describeimage",
+            "name": "Describir Imagen",
+            "credentials": {
+                "openAiApi": {
+                    "id": "gYGyxfOKDAAf2esW",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "b1",
+                            "name": "final_content",
+                            "value": "=[IMAGEN] {{ $json.content }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b2",
+                            "name": "phone",
+                            "value": "={{ $('Evaluate Access').item.json.phone }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b3",
+                            "name": "lead_name",
+                            "value": "={{ $('Evaluate Access').item.json.lead_name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b4",
+                            "name": "direction",
+                            "value": "={{ $('Evaluate Access').item.json.direction }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b5",
+                            "name": "message_id",
+                            "value": "={{ $('Evaluate Access').item.json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b6",
+                            "name": "activate_chatbot",
+                            "value": "={{ $('Evaluate Access').item.json.activate_chatbot }}",
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                1980,
+                400
+            ],
+            "id": "setimage",
+            "name": "Set Image Content"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "c1",
+                            "name": "final_content",
+                            "value": "={{ $json.message_content }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c2",
+                            "name": "phone",
+                            "value": "={{ $json.phone }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c3",
+                            "name": "lead_name",
+                            "value": "={{ $json.lead_name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c4",
+                            "name": "direction",
+                            "value": "={{ $json.direction }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c5",
+                            "name": "message_id",
+                            "value": "={{ $json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "c6",
+                            "name": "activate_chatbot",
+                            "value": "={{ $json.activate_chatbot }}",
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                1440,
+                600
+            ],
+            "id": "settext",
+            "name": "Set Text Content"
+        },
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3,
+            "position": [
+                2160,
+                400
+            ],
+            "id": "merge",
+            "name": "Merge"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "WITH existing AS (\n  SELECT id FROM leads WHERE phone = '{{ $json.phone }}' LIMIT 1\n), \nnew_lead AS (\n  INSERT INTO leads (name, phone, status, source, chatbot_enabled) \n  SELECT '{{ $json.lead_name }}', '{{ $json.phone }}', 'NEW', 'whatsapp', true \n  WHERE NOT EXISTS (SELECT 1 FROM existing) \n  RETURNING id\n),\nupdate_chatbot AS (\n  UPDATE leads SET chatbot_enabled = true \n  WHERE phone = '{{ $json.phone }}' AND {{ $json.activate_chatbot }} = true\n  RETURNING id\n)\nSELECT COALESCE(\n  (SELECT id FROM existing), \n  (SELECT id FROM new_lead)\n) as lead_id",
+                "options": {}
+            },
+            "id": "createlead",
+            "name": "GetOrCreateLead",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2340,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO messages (lead_id, content, direction, type, status, whatsapp_id) VALUES ('{{ $json.lead_id }}', '{{ $('Merge').item.json.final_content }}', '{{ $('Merge').item.json.direction }}', 'text', 'received', '{{ $('Merge').item.json.message_id }}')",
+                "options": {}
+            },
+            "id": "savemsg",
+            "name": "SaveMessage",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2520,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO message_queue (phone, content, status, created_at) VALUES ('{{ $('Merge').item.json.phone }}', '{{ $('Merge').item.json.final_content }}', 'pending', NOW())",
+                "options": {}
+            },
+            "id": "insertqueue",
+            "name": "Insert to Queue",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2700,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "amount": 3,
+                "unit": "seconds"
+            },
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1.1,
+            "position": [
+                2880,
+                400
+            ],
+            "id": "waitqueue",
+            "name": "Wait 3s",
+            "webhookId": "wait-queue"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "WITH pending AS (SELECT id, content FROM message_queue WHERE phone = '{{ $('Merge').item.json.phone }}' AND status = 'pending' ORDER BY created_at), updated AS (UPDATE message_queue SET status = 'processed' WHERE id IN (SELECT id FROM pending) RETURNING id) SELECT string_agg(content, ' | ') as merged_message, count(*) as msg_count FROM pending",
+                "options": {}
+            },
+            "id": "getqueue",
+            "name": "Get & Merge Queue",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                3060,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $json.merged_message }}",
+                            "operation": "isNotEmpty"
+                        }
+                    ]
+                }
+            },
+            "id": "hasmsgs",
+            "name": "Has Messages?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                3240,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const queueData = $('Get & Merge Queue').first().json;\nconst mergeData = $('Merge').first().json;\nconst leadData = $('GetOrCreateLead').first().json;\n\nreturn [{\n  json: {\n    chat_input: queueData.merged_message,\n    session_id: mergeData.phone,\n    lead_id: leadData.lead_id\n  }\n}];"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                3420,
+                400
+            ],
+            "id": "prepareai",
+            "name": "Prepare AI Input"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.chat_input }}",
+                "options": {
+                    "systemMessage": "Fecha y hora actual: {{ $now }}\n\n# ROL\nEres PREXA, asistente virtual de ventas del proyecto **RESIDENCIAL ALQUIMIA** en Huaranguillo, Sachaca - Arequipa. Tu objetivo es vender lotes de este proyecto exclusivo de 71 terrenos.\n\n# TONO Y ESTILO\n- Profesional pero cercano (tutea al cliente)\n- Entusiasta sobre el proyecto Alquimia\n- Respuestas cortas (máximo 3-4 líneas)\n- Emojis con moderación: ✅ 📍 � 🌳 🌄 �\n- Nunca uses asteriscos ni markdown\n- Cierra con pregunta o llamado a acción\n\n# INFORMACIÓN DEL PROYECTO\n\n**Residencial Alquimia**\n- 📍 Ubicación: Huaranguillo, Sachaca - Arequipa\n- 🏘️ Total: 71 lotes disponibles\n- 🌳 Zona tradicional con vista a la campiña arequipeña\n- 🏡 Habilitación urbana completa\n\n# FORMATO ESPECIAL PARA ACCIONES\n\nCuando necesites ejecutar acciones en la base de datos, responde con este formato exacto:\n\n## BUSCAR LOTES\n```\nACTION:SEARCH_PROPERTIES\nFILTERS:location=UBICACION_ESPECIFICA,characteristics=CARACTERISTICA\n---\nMensaje breve para el usuario mientras busco\n```\n\n**Preferencias de ubicación que puedes buscar:**\n- `frente` - Lotes con frente principal\n- `parque` - Lotes frente al parque\n- `esquina` - Lotes en esquina (mayor metraje)\n- `campiña` - Lotes con vista a la campiña\n- `central` - Lotes en zona central del proyecto\n\nEjemplo real:\n```\nACTION:SEARCH_PROPERTIES\nFILTERS:location=parque,max_price=50000,currency=USD\n---\nBuscando lotes frente al parque en Residencial Alquimia...\n```\n\n## CREAR CITA\n```\nACTION:CREATE_APPOINTMENT\nDATA:property_id=UUID,client_name=NOMBRE,client_phone=TELEFONO,scheduled_date=YYYY-MM-DD,scheduled_time=HH:MM\n---\nMensaje breve mientras agendo\n```\n\nEjemplo real:\n```\nACTION:CREATE_APPOINTMENT\nDATA:property_id=123e4567-e89b-12d3-a456-426614174000,client_name=Juan Perez,client_phone=51999999999,scheduled_date=2026-01-25,scheduled_time=10:00\n---\nPerfecto Juan, agendando tu visita a Residencial Alquimia...\n```\n\n# FLUJO DE CONVERSACIÓN\n\n## 1. Saludo y Presentación del Proyecto\nUsuario: \"Hola\" o \"alquimia hola\"\nTú: \"¡Hola! 👋 Soy PREXA de Residencial Alquimia 🏡 Tenemos 71 lotes en el tradicional pueblo de Huaranguillo, Sachaca. ¿Buscas un terreno para tu casa propia o inversión?\"\n\n## 2. Descubrimiento de Preferencias\nCuando el cliente muestre interés, SIEMPRE pregunta por preferencias ANTES de buscar:\n\nUsuario: \"Quiero un terreno\"\nTú: \"¡Excelente! 🌳 ¿Qué ubicación prefieres en Residencial Alquimia?\n- 🏞️ Frente al parque\n- 🌄 Vista a la campiña\n- 🏘️ Lote en esquina\n- 🏡 Zona central\nCuéntame qué te gustaría\"\n\n## 3. Búsqueda Basada en Preferencias\nUna vez que el cliente indique una preferencia, usa ACTION:SEARCH_PROPERTIES con los filtros correspondientes:\n\nUsuario: \"Me gustaría frente al parque\"\nTú: Responde con ACTION:SEARCH_PROPERTIES\n```\nFILTERS:location=parque\n```\n\nUsuario: \"Vista a la campiña y esquina\"\nTú: Responde con ACTION:SEARCH_PROPERTIES\n```\nFILTERS:location=esquina,characteristics=vista_campiña\n```\n\n## 4. Presentación de Opciones\nSiempre muestra **máximo 3 opciones** de lotes que coincidan con las preferencias.\n\nFormato de presentación:\n```\nPerfecto! Encontré estos lotes en Residencial Alquimia:\n\n1. 🏡 Lote [número] - Frente al parque\n  📐 [área] m²\n   💰 [moneda] [precio]\n   📍 Manzana [X], Lote [Y]\n   ID: [uuid]\n\n2. [siguiente lote...]\n```\n\n## 5. Información Adicional\nSi el cliente pregunta por características, menciona:\n- ✅ Habilitación urbana completa\n- ✅ Agua, luz, desagüe\n- ✅ Pistas y veredas\n- ✅ Área verde (parque)\n- ✅ Vista a la campiña arequipeña\n- ✅ Ubicado en pueblo tradicional de Huaranguillo\n\n## 6. Agendar Visita\nUsuario: \"Quiero ver el lote el 25 de enero a las 10am\"\n\nIMPORTANTE: Antes de usar ACTION:CREATE_APPOINTMENT necesitas:\n- property_id: Del lote que eligió\n- client_name: Pregunta si no lo tienes\n- client_phone: Usa el número de WhatsApp del usuario\n- scheduled_date: Parsealo del mensaje (ej: \"25 de enero\" = \"2026-01-25\")\n- scheduled_time: Formato 24h (ej: \"10am\" = \"10:00\")\n\nSi falta algún dato, pregunta específicamente por ese dato.\n\nUsuario confirma todos los datos:\nTú: Responde con ACTION:CREATE_APPOINTMENT\n\n# REGLAS CRÍTICAS\n\n✅ SIEMPRE menciona que es \"Residencial Alquimia en Huaranguillo, Sachaca\"\n\n✅ ANTES de buscar lotes, PREGUNTA por preferencias de ubicación\n\n✅ USA ACTION:SEARCH_PROPERTIES cuando el usuario:\n- Indique una preferencia específica (frente, parque, esquina, vista)\n- Mencione presupuesto o área deseada\n- Quiera ver opciones concretas\n\n✅ Presenta MÁXIMO 3 lotes a la vez\n\n✅ USA ACTION:CREATE_APPOINTMENT cuando:\n- Tengas TODOS los datos requeridos\n- El usuario confirme que quiere visitar un lote específico\n- Ya hayan visto lotes concretos\n\n❌ NO uses ACTION si:\n- Es un saludo o presentación inicial\n- El usuario solo está preguntando información general\n- Falta información crítica para la búsqueda\n- El usuario no ha indicado sus preferencias aún\n\n❌ NO ofrezcas propiedades de otros proyectos\n❌ NO inventes lotes o datos\n❌ NO menciones otros proyectos inmobiliarios\n\n# MANEJO DE OBJECIONES\n\n**Precio alto:**\n\"Entiendo tu preocupación 💰 Residencial Alquimia es una inversión a largo plazo en zona tradicional con habilitación completa. ¿Te gustaría ver lotes en diferentes ubicaciones para comparar?\"\n\n**Ubicación lejana:**\n\"Huaranguillo es un pueblo tradicional de Sachaca, a solo [X] minutos del centro 🚗 La tranquilidad y vista a la campiña son inigualables. ¿Te interesa conocerlo?\"\n\n**Dudas sobre habilitación:**\n\"Residencial Alquimia cuenta con habilitación urbana COMPLETA ✅ Todos los servicios instalados y documentación en regla. ¿Quieres agendar una visita para verlo?\"\n\n# MENSAJES DE EJEMPLO\n\n✅ CORRECTO - Descubrimiento:\n```\n¡Genial! 🏡 Antes de mostrarte opciones, cuéntame: ¿prefieres un lote frente al parque, en esquina, o con vista a la campiña? Esto me ayuda a encontrar el ideal para ti\n```\n\n✅ CORRECTO - Búsqueda con preferencia:\n```\nACTION:SEARCH_PROPERTIES\nFILTERS:location=parque,max_price=40000,currency=USD\n---\nPerfecto! Buscando lotes frente al parque en Residencial Alquimia...\n```\n\n✅ CORRECTO - Presentación de lotes:\n```\nEncontré 3 lotes frente al parque en Residencial Alquimia:\n\n1. 🏡 Lote 15 - Manzana B\n   📐 180 m²\n   💰 USD 38,500\n   🌳 Frente directo al parque\n   ID: abc-123\n\n¿Te gustaría agendar visita para alguno?\n```\n\n✅ CORRECTO - Agendar cita:\n```\nACTION:CREATE_APPOINTMENT\nDATA:property_id=abc-123,client_name=Maria Lopez,client_phone=51987654321,scheduled_date=2026-01-28,scheduled_time=15:00\n---\nAgendando tu visita al lote 15 en Residencial Alquimia, Maria...\n```\n\n❌ INCORRECTO - Ofrecer sin preguntar preferencias:\n```\nTenemos 71 lotes disponibles en varios precios\n```\n(Primero debes preguntar qué tipo de ubicación prefiere)\n\n❌ INCORRECTO - Mencionar otros proyectos:\n```\nTambién tenemos terrenos en otros distritos\n```\n(Solo vendes Residencial Alquimia)\n\n# PALABRAS CLAVE IMPORTANTES\n\nSiempre usa estos términos cuando describas el proyecto:\n- \"Residencial Alquimia\"\n- \"Huaranguillo, Sachaca\"\n- \"Pueblo tradicional\"\n- \"Vista a la campiña arequipeña\"\n- \"Habilitación urbana completa\"\n- \"71 lotes exclusivos\""
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 2,
+            "position": [
+                3620,
+                400
+            ],
+            "id": "aiagent",
+            "name": "AI Agent"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "value": "gpt-4o",
+                    "mode": "list",
+                    "cachedResultName": "gpt-4o"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1.2,
+            "position": [
+                3520,
+                620
+            ],
+            "id": "openaimodel",
+            "name": "OpenAI Chat Model",
+            "credentials": {
+                "openAiApi": {
+                    "id": "gYGyxfOKDAAf2esW",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "sessionIdType": "customKey",
+                "sessionKey": "={{ $('Prepare AI Input').item.json.session_id }}",
+                "contextWindowLength": 20
+            },
+            "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+            "typeVersion": 1.3,
+            "position": [
+                3660,
+                620
+            ],
+            "id": "memory",
+            "name": "Postgres Chat Memory",
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const aiResponse = $json.output || '';\n\nconst actionMatch = aiResponse.match(/^ACTION:(\\w+)\\n(.*?)\\n---\\n(.*)/s);\n\nif (actionMatch) {\n  const actionType = actionMatch[1];\n  const params = actionMatch[2];\n  const userMessage = actionMatch[3];\n  \n  const parsedParams = {};\n  \n  if (actionType === 'SEARCH_PROPERTIES') {\n    const filters = params.replace('FILTERS:', '').split(',');\n    filters.forEach(f => {\n      const [key, value] = f.split('=');\n      parsedParams[key.trim()] = value.trim();\n    });\n  } else if (actionType === 'CREATE_APPOINTMENT') {\n    const data = params.replace('DATA:', '').split(',');\n    data.forEach(d => {\n      const [key, value] = d.split('=');\n      parsedParams[key.trim()] = value.trim();\n    });\n  }\n  \n  return [{\n    json: {\n      has_action: true,\n      action_type: actionType,\n      parameters: parsedParams,\n      user_message: userMessage.trim(),\n      original_response: aiResponse\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    has_action: false,\n    final_message: aiResponse,\n    original_response: aiResponse\n  }\n}];"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                3820,
+                400
+            ],
+            "id": "parseairesponse",
+            "name": "Parse AI Response"
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json.has_action }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "id": "hasaction",
+            "name": "Has Action?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                4000,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "rules": {
+                    "values": [
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.action_type }}",
+                                        "rightValue": "SEARCH_PROPERTIES",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Search"
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 2
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.action_type }}",
+                                        "rightValue": "CREATE_APPOINTMENT",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "Create"
+                        }
+                    ]
+                },
+                "options": {
+                    "fallbackOutput": "extra"
+                }
+            },
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 3.2,
+            "position": [
+                4180,
+                200
+            ],
+            "id": "switchaction",
+            "name": "Switch Action"
+        },
+        {
+            "parameters": {
+                "jsCode": "const params = $json.parameters;\n\nlet query = \"SELECT id, description, location, price, currency, area, status FROM properties WHERE status = 'disponible'\";\nconst conditions = [];\n\n// Siempre filtrar por proyecto Alquimia si existe el campo\nconditions.push(\"(description ILIKE '%Alquimia%' OR description ILIKE '%Huaranguillo%' OR location ILIKE '%Sachaca%')\");\n\n// Manejar preferencias de ubicación específicas de Alquimia\nif (params.location) {\n  const loc = params.location.toLowerCase();\n  \n  if (loc.includes('parque')) {\n    conditions.push(\"(description ILIKE '%parque%' OR description ILIKE '%frente%parque%')\");\n  } else if (loc.includes('esquina')) {\n    conditions.push(\"(description ILIKE '%esquina%' OR description ILIKE '%corner%')\");\n  } else if (loc.includes('campiña') || loc.includes('campina') || loc.includes('vista')) {\n    conditions.push(\"(description ILIKE '%campiña%' OR description ILIKE '%vista%' OR description ILIKE '%campina%')\");\n  } else if (loc.includes('frente')) {\n    conditions.push(\"(description ILIKE '%frente%' OR description ILIKE '%principal%')\");\n  } else if (loc.includes('central')) {\n    conditions.push(\"(description ILIKE '%central%' OR description ILIKE '%centro%')\");\n  } else {\n    // Búsqueda genérica por ubicación\n    conditions.push(`(location ILIKE '%${loc.replace(/'/g, \"''\")}%' OR description ILIKE '%${loc.replace(/'/g, \"''\")}%')`);\n  }\n}\n\n// Características adicionales\nif (params.characteristics) {\n  const chars = params.characteristics.toLowerCase();\n  if (chars.includes('vista')) {\n    conditions.push(\"(description ILIKE '%vista%' OR description ILIKE '%campiña%')\");\n  }\n}\n\n// Filtros de precio\nif (params.max_price) {\n  conditions.push(`price <= ${parseFloat(params.max_price)}`);\n}\n\nif (params.min_price) {\n  conditions.push(`price >= ${parseFloat(params.min_price)}`);\n}\n\n// Filtro de moneda\nif (params.currency) {\n  conditions.push(`currency = '${params.currency}'`);\n}\n\n// Filtros de área\nif (params.min_area) {\n  conditions.push(`area >= ${parseFloat(params.min_area)}`);\n}\n\nif (params.max_area) {\n  conditions.push(`area <= ${parseFloat(params.max_area)}`);\n}\n\nif (conditions.length > 0) {\n  query += ' AND ' + conditions.join(' AND ');\n}\n\nquery += ' ORDER BY price ASC LIMIT 10';\n\nreturn [{\n  json: {\n    query: query,\n    action_type: 'SEARCH_PROPERTIES',\n    user_message: $json.user_message\n  }\n}];"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                4360,
+                100
+            ],
+            "id": "buildsearch",
+            "name": "Build Search Query"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "={{ $json.query }}",
+                "options": {}
+            },
+            "id": "executesearch",
+            "name": "Execute Search",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                4540,
+                100
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const results = $input.all();\nconst userMessage = $('Parse AI Response').first().json.user_message;\n\nif (results.length === 0) {\n  return [{\n    json: {\n      formatted_results: \"No encontré lotes con esas características en Residencial Alquimia. ¿Te gustaría ver otras opciones o cambiar tus preferencias?\",\n      needs_ai_response: true\n    }\n  }];\n}\n\nlet formatted = `Perfecto! Encontré ${results.length} ${results.length === 1 ? 'lote' : 'lotes'} en Residencial Alquimia:\\n\\n`;\n\nresults.slice(0, 3).forEach((item, idx) => {\n  const prop = item.json;\n  formatted += `${idx + 1}. 🏡 ${prop.description}\\n`;\n  formatted += `   📍 ${prop.location}\\n`;\n  formatted += `   📐 ${prop.area} m²\\n`;\n  formatted += `   💰 ${prop.currency} ${prop.price.toLocaleString()}\\n`;\n  formatted += `   🆔 ID: ${prop.id.substring(0, 8)}...\\n\\n`;\n});\n\nif (results.length > 3) {\n  formatted += `... y ${results.length - 3} lotes más disponibles.\\n\\n`;\n}\n\nformatted += \"¿Te interesa alguno? Puedo agendar tu visita a Residencial Alquimia 📅\";\n\nreturn [{\n  json: {\n    formatted_results: formatted,\n    raw_results: results.map(r => r.json),\n    needs_ai_response: false,\n    final_message: formatted\n  }\n}];"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                4720,
+                100
+            ],
+            "id": "formatsearch",
+            "name": "Format Search Results"
+        },
+        {
+            "parameters": {
+                "jsCode": "const params = $json.parameters;\n\nconst propertyId = params.property_id;\nconst clientName = params.client_name.replace(/'/g, \"''\");\nconst clientPhone = params.client_phone;\nconst scheduledDate = params.scheduled_date;\nconst scheduledTime = params.scheduled_time;\n\nconst query = `\nWITH available_agent AS (\n  SELECT id \n  FROM users \n  WHERE active = true \n  ORDER BY RANDOM() \n  LIMIT 1\n)\nINSERT INTO appointments (\n  property_id,\n  agent_id,\n  client_name,\n  client_phone,\n  scheduled_date,\n  scheduled_time,\n  status\n)\nSELECT \n  '${propertyId}'::uuid,\n  id,\n  '${clientName}',\n  '${clientPhone}',\n  '${scheduledDate}'::date,\n  '${scheduledTime}'::time,\n  'agendado'\nFROM available_agent\nRETURNING \n  id,\n  property_id::text,\n  agent_id,\n  client_name,\n  client_phone,\n  scheduled_date::text,\n  scheduled_time::text,\n  status,\n  created_at\n`;\n\nreturn [{\n  json: {\n    query: query.trim(),\n    action_type: 'CREATE_APPOINTMENT',\n    user_message: $json.user_message,\n    parameters: params\n  }\n}];"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                4360,
+                300
+            ],
+            "id": "buildcreate",
+            "name": "Build Create Query"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "={{ $json.query }}",
+                "options": {}
+            },
+            "id": "executecreate",
+            "name": "Execute Create",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                4540,
+                300
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const result = $input.first().json;\nconst userMessage = $('Parse AI Response').first().json.user_message;\n\nif (!result.id) {\n  return [{\n    json: {\n      final_message: \"Lo siento, hubo un error al agendar la cita. ¿Puedes intentar de nuevo?\",\n      needs_ai_response: false\n    }\n  }];\n}\n\nconst formatted = `✅ ¡Visita agendada en Residencial Alquimia!\\n\\n📅 Fecha: ${result.scheduled_date}\\n⏰ Hora: ${result.scheduled_time}\\n👤 Cliente: ${result.client_name}\\n📞 Teléfono: ${result.client_phone}\\n📋 Estado: ${result.status}\\n\\n🏡 Te esperamos en Huaranguillo, Sachaca. Nuestro asesor te confirmará los detalles pronto.`;\n\nreturn [{\n  json: {\n    formatted_results: formatted,\n    raw_result: result,\n    needs_ai_response: false,\n    final_message: formatted\n  }\n}];"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                4720,
+                300
+            ],
+            "id": "formatcreate",
+            "name": "Format Create Results"
+        },
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3,
+            "position": [
+                4900,
+                300
+            ],
+            "id": "mergeactions",
+            "name": "Merge Actions"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO messages (lead_id, content, direction, type, status) VALUES ('{{ $('Prepare AI Input').item.json.lead_id }}', '{{ $json.final_message }}', 'outbound', 'text', 'sent')",
+                "options": {}
+            },
+            "id": "saveairesponse",
+            "name": "Save AI Response",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                5080,
+                400
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Try to get output from Merge Actions (if action was executed) or Parse AI Response (if no action)\nlet output = '';\ntry {\n  const mergeData = $('Merge Actions').first();\n  if (mergeData && mergeData.json) {\n    output = mergeData.json.final_message || '';\n  }\n} catch (e) {\n  // Merge Actions not executed, try Parse AI Response\n  const parseData = $('Parse AI Response').first();\n  if (parseData && parseData.json) {\n    output = parseData.json.final_message || '';\n  }\n}\n\nconst normData = $('Normalizacion').first().json;\n\nif (!output || output.trim() === '') {\n  return [{ json: { \n    response_text: 'Lo siento, hubo un error. ¿Puedes repetir tu mensaje?',\n    instance_server_url: normData.instance_server_url,\n    instance_name: normData.instance_name,\n    instance_apikey: normData.instance_apikey,\n    user_number: normData.user_number\n  } }];\n}\n\nconst sentences = output.split(/(?<=[.!?])\\s+/).filter(s => s.trim().length > 0);\nconst chunks = [];\nfor (let i = 0; i < sentences.length; i += 2) {\n  const chunk = sentences.slice(i, i + 2).join(' ').trim();\n  if (chunk) chunks.push(chunk);\n}\n\nif (chunks.length === 0) {\n  chunks.push(output);\n}\n\nreturn chunks.map(text => ({ \n  json: { \n    response_text: text,\n    instance_server_url: normData.instance_server_url,\n    instance_name: normData.instance_name,\n    instance_apikey: normData.instance_apikey,\n    user_number: normData.user_number\n  } \n}));"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                5260,
+                400
+            ],
+            "id": "splitresponse",
+            "name": "Split Response"
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 3,
+            "position": [
+                5440,
+                400
+            ],
+            "id": "loop",
+            "name": "Loop Messages"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $json.instance_server_url }}/message/sendText/{{ $json.instance_name }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "apikey",
+                            "value": "={{ $json.instance_apikey }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "number",
+                            "value": "={{ $json.user_number }}"
+                        },
+                        {
+                            "name": "text",
+                            "value": "={{ $json.response_text }}"
+                        },
+                        {
+                            "name": "delay",
+                            "value": "={{ 1000 }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                5620,
+                500
+            ],
+            "id": "sendmsg",
+            "name": "Enviar WhatsApp"
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Wait",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait": {
+            "main": [
+                [
+                    {
+                        "node": "Normalizacion",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Normalizacion": {
+            "main": [
+                [
+                    {
+                        "node": "Check Lead Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Lead Status": {
+            "main": [
+                [
+                    {
+                        "node": "Evaluate Access",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Evaluate Access": {
+            "main": [
+                [
+                    {
+                        "node": "Filtro Conversacion",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filtro Conversacion": {
+            "main": [
+                [
+                    {
+                        "node": "Switch",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                []
+            ]
+        },
+        "Switch": {
+            "main": [
+                [
+                    {
+                        "node": "Get Audio",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Get Image",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Set Text Content",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Set Text Content",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Audio": {
+            "main": [
+                [
+                    {
+                        "node": "Convertir Audio",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Convertir Audio": {
+            "main": [
+                [
+                    {
+                        "node": "Transcribir",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Transcribir": {
+            "main": [
+                [
+                    {
+                        "node": "Set Audio Content",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Set Audio Content": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Image": {
+            "main": [
+                [
+                    {
+                        "node": "Convertir Imagen",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Convertir Imagen": {
+            "main": [
+                [
+                    {
+                        "node": "Describir Imagen",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Describir Imagen": {
+            "main": [
+                [
+                    {
+                        "node": "Set Image Content",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Set Image Content": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Set Text Content": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Merge": {
+            "main": [
+                [
+                    {
+                        "node": "GetOrCreateLead",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "GetOrCreateLead": {
+            "main": [
+                [
+                    {
+                        "node": "SaveMessage",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "SaveMessage": {
+            "main": [
+                [
+                    {
+                        "node": "Insert to Queue",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Insert to Queue": {
+            "main": [
+                [
+                    {
+                        "node": "Wait 3s",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait 3s": {
+            "main": [
+                [
+                    {
+                        "node": "Get & Merge Queue",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get & Merge Queue": {
+            "main": [
+                [
+                    {
+                        "node": "Has Messages?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Has Messages?": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare AI Input",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                []
+            ]
+        },
+        "Prepare AI Input": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Postgres Chat Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Parse AI Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse AI Response": {
+            "main": [
+                [
+                    {
+                        "node": "Has Action?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Has Action?": {
+            "main": [
+                [
+                    {
+                        "node": "Switch Action",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Save AI Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Switch Action": {
+            "main": [
+                [
+                    {
+                        "node": "Build Search Query",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Build Create Query",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                []
+            ]
+        },
+        "Build Search Query": {
+            "main": [
+                [
+                    {
+                        "node": "Execute Search",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Execute Search": {
+            "main": [
+                [
+                    {
+                        "node": "Format Search Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Search Results": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Actions",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Create Query": {
+            "main": [
+                [
+                    {
+                        "node": "Execute Create",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Execute Create": {
+            "main": [
+                [
+                    {
+                        "node": "Format Create Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Create Results": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Actions",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Merge Actions": {
+            "main": [
+                [
+                    {
+                        "node": "Save AI Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save AI Response": {
+            "main": [
+                [
+                    {
+                        "node": "Split Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Split Response": {
+            "main": [
+                [
+                    {
+                        "node": "Loop Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Loop Messages": {
+            "main": [
+                [],
+                [
+                    {
+                        "node": "Enviar WhatsApp",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Enviar WhatsApp": {
+            "main": [
+                [
+                    {
+                        "node": "Loop Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "active": false
+}

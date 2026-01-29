@@ -1,0 +1,13 @@
+        {
+            "parameters": {
+                "jsCode": "const normData = $('Normalizacion').first().json;\nconst leadResult = $input.first().json;\n\nconst containsKeyword = normData.contains_keyword || false;\nconst chatbotEnabled = leadResult.chatbot_enabled || false;\nconst leadExists = leadResult.id ? true : false;\n\n// El flujo procede si contiene la palabra clave O si el chatbot ya estaba activo\nconst shouldProceed = containsKeyword || chatbotEnabled;\n\nreturn [{\n  json: {\n    ...normData,\n    lead_exists: leadExists,\n    existing_lead_id: leadResult.id || null,\n    chatbot_was_enabled: chatbotEnabled,\n    contains_keyword: containsKeyword,\n    activate_chatbot: containsKeyword && !chatbotEnabled,\n    should_proceed: shouldProceed\n  }\n}];"
+            },
+            "id": "evaluateaccess",
+            "name": "Evaluate Access",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                880,
+                400
+            ]
+        },

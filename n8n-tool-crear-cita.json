@@ -1,0 +1,54 @@
+{
+    "name": "crear_cita",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "trigger",
+            "name": "Execute Workflow Trigger",
+            "type": "n8n-nodes-base.executeWorkflowTrigger",
+            "typeVersion": 1,
+            "position": [
+                200,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO appointments (client_name, client_phone, scheduled_date, scheduled_time, status) VALUES ('{{ $json.client_name || \"Cliente\" }}', '{{ $json.client_phone || \"000\" }}', '{{ $json.scheduled_date || \"2026-01-01\" }}', '{{ $json.scheduled_time || \"10:00\" }}', 'agendado') RETURNING id",
+                "options": {}
+            },
+            "id": "db",
+            "name": "Postgres",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                450,
+                200
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Execute Workflow Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Postgres",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    }
+}

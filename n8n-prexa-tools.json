@@ -1,0 +1,203 @@
+{
+    "name": "prexa_tools",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "trigger",
+            "name": "Execute Workflow Trigger",
+            "type": "n8n-nodes-base.executeWorkflowTrigger",
+            "typeVersion": 1,
+            "position": [
+                200,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "rules": {
+                    "values": [
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "type": "string"
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.action }}",
+                                        "rightValue": "buscar_propiedades",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals",
+                                            "name": "filter_string_eq"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "outputIndex": 0
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "type": "string"
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.action }}",
+                                        "rightValue": "obtener_agentes",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals",
+                                            "name": "filter_string_eq"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "outputIndex": 1
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "type": "string"
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.action }}",
+                                        "rightValue": "crear_cita",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals",
+                                            "name": "filter_string_eq"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "outputIndex": 2
+                        }
+                    ]
+                }
+            },
+            "id": "switch",
+            "name": "Switch Action",
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 3,
+            "position": [
+                450,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, description, location, price, currency, area FROM properties WHERE status = 'disponible' {{ $node[\"Execute Workflow Trigger\"].json.location ? \"AND location ILIKE '%\" + $node[\"Execute Workflow Trigger\"].json.location + \"%'\" : \"\" }} LIMIT 5",
+                "options": {}
+            },
+            "id": "db_search",
+            "name": "Search Properties",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                700,
+                200
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, name, email FROM profiles WHERE status = 'Active' LIMIT 5",
+                "options": {}
+            },
+            "id": "db_agents",
+            "name": "Get Agents",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                700,
+                400
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO appointments (property_id, client_name, client_phone, scheduled_date, scheduled_time, status) VALUES ('{{ $node[\"Execute Workflow Trigger\"].json.property_id }}', '{{ $node[\"Execute Workflow Trigger\"].json.client_name }}', '{{ $node[\"Execute Workflow Trigger\"].json.client_phone }}', '{{ $node[\"Execute Workflow Trigger\"].json.scheduled_date }}', '{{ $node[\"Execute Workflow Trigger\"].json.scheduled_time }}', 'agendado') RETURNING id",
+                "options": {}
+            },
+            "id": "db_create",
+            "name": "Create Appointment",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                700,
+                600
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Execute Workflow Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Switch Action",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Switch Action": {
+            "main": [
+                [
+                    {
+                        "node": "Search Properties",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Get Agents",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Create Appointment",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    }
+}

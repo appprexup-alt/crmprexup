@@ -1,0 +1,54 @@
+{
+    "name": "obtener_agentes",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "trigger",
+            "name": "Execute Workflow Trigger",
+            "type": "n8n-nodes-base.executeWorkflowTrigger",
+            "typeVersion": 1,
+            "position": [
+                200,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, name, email FROM profiles WHERE role = 'Agent' AND status = 'Active' LIMIT 5",
+                "options": {}
+            },
+            "id": "db",
+            "name": "Postgres",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                400,
+                200
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Execute Workflow Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Postgres",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    }
+}

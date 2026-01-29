@@ -1,0 +1,12 @@
+{
+    "webhook": {
+        "enabled": true,
+        "url": "https://n8n.kywia.com/webhook/whatsapp-webhook",
+        "webhook_by_events": false,
+        "webhook_base64": false,
+        "events": [
+            "MESSAGES_UPSERT",
+            "CONNECTION_UPDATE"
+        ]
+    }
+}

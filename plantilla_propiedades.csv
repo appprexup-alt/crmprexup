@@ -1,0 +1,11 @@
+description,location,price,currency,area,property_type,bedrooms,bathrooms,built_area,floors,status,details
+Casa Modelo A,Los Olivos,250000,USD,150,casa,3,2,120,2,disponible,Casa moderna con jardín y cochera doble
+Departamento Vista Mar,Miraflores,180000,USD,85,departamento,2,2,85,1,disponible,Vista al mar piso 10 con balcón
+Terreno Comercial,Pachacamac,50000,USD,200,terreno,0,0,0,0,disponible,Lote plano con todos los servicios básicos
+Casa Familiar Grande,San Miguel,1200000,PEN,180,casa,4,3,160,2,disponible,Amplia casa con patio trasero y piscina
+Oficina Corporativa,San Isidro,350000,USD,120,otro,0,2,120,1,disponible,Oficina en edificio corporativo
+Local Comercial,La Molina,95000,USD,60,otro,0,1,60,1,separado,Local en centro comercial
+Penthouse Lujo,Surco,280000,USD,150,departamento,3,3,150,1,disponible,Penthouse con terraza privada
+Casa Playa,Asia,180000,USD,200,casa,3,2,140,2,disponible,Casa de playa amoblada
+Departamento Estreno,Jesús María,120000,USD,70,departamento,2,1,70,1,disponible,Departamento nuevo con acabados de lujo
+Terreno Urbano,Ate,35000,USD,120,terreno,0,0,0,0,disponible,Terreno plano zonificado para vivienda

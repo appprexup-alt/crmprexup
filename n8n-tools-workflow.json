@@ -1,0 +1,158 @@
+{
+    "name": "PrexUp - AI Tools",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "buscar_propiedades",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "webhook_search",
+            "name": "Webhook Search",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                200,
+                200
+            ],
+            "webhookId": "search-tool"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, description, location, price, currency, area, status FROM properties WHERE lower(status) = 'disponible' {{ $json.body.location ? \"AND location ILIKE '%\" + $json.body.location + \"%'\" : \"\" }} {{ $json.body.max_price ? \"AND price <= \" + $json.body.max_price : \"\" }} LIMIT 5",
+                "options": {}
+            },
+            "id": "db_search",
+            "name": "DB Search",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                400,
+                200
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "obtener_agentes",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "webhook_agents",
+            "name": "Webhook Agents",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                200,
+                400
+            ],
+            "webhookId": "agents-tool"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, name, email, phone FROM users WHERE active = true LIMIT 5",
+                "options": {}
+            },
+            "id": "db_agents",
+            "name": "DB Agents",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                400,
+                400
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "crear_cita",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "webhook_create",
+            "name": "Webhook Create",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                200,
+                600
+            ],
+            "webhookId": "create-tool"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO appointments (property_id, client_name, client_phone, scheduled_date, scheduled_time, status) VALUES ('{{ $json.body.property_id }}', '{{ $json.body.client_name }}', '{{ $json.body.client_phone }}', '{{ $json.body.scheduled_date }}', '{{ $json.body.scheduled_time }}', 'agendado') RETURNING id",
+                "options": {}
+            },
+            "id": "db_create",
+            "name": "DB Create",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                400,
+                600
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "VyG1bjMeGSJKR4Dx",
+                    "name": "PostgresPrexUp"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Webhook Search": {
+            "main": [
+                [
+                    {
+                        "node": "DB Search",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Webhook Agents": {
+            "main": [
+                [
+                    {
+                        "node": "DB Agents",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Webhook Create": {
+            "main": [
+                [
+                    {
+                        "node": "DB Create",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    }
+}
