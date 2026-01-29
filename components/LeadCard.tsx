@@ -35,7 +35,16 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onOpenLead, onToggleChatbot }
       className="bg-slate-800/80 border border-slate-700/50 p-2.5 rounded-xl shadow-lg hover:shadow-purple-500/10 hover:border-purple-500/30 transition-all cursor-grab active:cursor-grabbing group"
     >
       <div className="flex justify-between items-start mb-1.5">
-        <h4 className="text-[10px] font-bold text-slate-100 uppercase tracking-tight group-hover:text-white truncate max-w-[110px]">{lead.name}</h4>
+        <div className="flex items-center gap-1.5">
+          <h4 className="text-[10px] font-bold text-slate-100 uppercase tracking-tight group-hover:text-white truncate max-w-[90px]">{lead.name}</h4>
+          <span className={`px-1 py-0.5 rounded text-[7px] font-bold uppercase tracking-wider ${lead.status === 'activo' ? 'bg-emerald-500/20 text-emerald-400' :
+              lead.status === 'inactivo' ? 'bg-slate-500/20 text-slate-400' :
+                lead.status === 'pausado' ? 'bg-amber-500/20 text-amber-400' :
+                  lead.status === 'convertido' ? 'bg-blue-500/20 text-blue-400' :
+                    lead.status === 'perdido' ? 'bg-rose-500/20 text-rose-400' :
+                      'bg-purple-500/20 text-purple-400'
+            }`}>{lead.status || 'nuevo'}</span>
+        </div>
         <button
           onClick={(e) => { e.stopPropagation(); onOpenLead(lead); }}
           className="text-slate-500 hover:text-white transition-colors p-1"

@@ -131,6 +131,16 @@ const LeadModal: React.FC<LeadModalProps> = ({ lead, tasks, projects, users, sta
                     {stages.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </label>
+                <label className="block">
+                  <span className="text-[9px] font-black text-slate-500 uppercase flex items-center gap-1.5 mb-1 tracking-widest"><CheckCircle2 size={10} /> Estado del Lead</span>
+                  <select value={editedLead.status || 'activo'} onChange={e => setEditedLead({ ...editedLead, status: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-lg py-2 px-3 text-[10px] font-black uppercase tracking-widest outline-none" style={{ color: editedLead.status === 'activo' ? '#22c55e' : editedLead.status === 'inactivo' ? '#94a3b8' : editedLead.status === 'pausado' ? '#f59e0b' : editedLead.status === 'convertido' ? '#3b82f6' : editedLead.status === 'perdido' ? '#ef4444' : '#a78bfa' }}>
+                    <option value="activo">🟢 Activo</option>
+                    <option value="inactivo">⚪ Inactivo</option>
+                    <option value="pausado">🟡 Pausado</option>
+                    <option value="convertido">🔵 Convertido</option>
+                    <option value="perdido">🔴 Perdido</option>
+                  </select>
+                </label>
                 <div className="flex items-center justify-between p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-xl mt-2">
                   <div className="flex items-center gap-2">
                     <Bot size={16} className="text-indigo-400" />
