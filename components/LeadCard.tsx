@@ -32,17 +32,18 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onOpenLead, onToggleChatbot }
       draggable
       onDragStart={handleDragStart}
       onClick={() => onOpenLead(lead)}
-      className="bg-slate-800/80 border border-slate-700/50 p-2.5 rounded-xl shadow-lg hover:shadow-purple-500/10 hover:border-purple-500/30 transition-all cursor-grab active:cursor-grabbing group"
+      className="border p-2.5 rounded-xl shadow-lg hover:shadow-purple-500/10 hover:border-purple-500/30 transition-all cursor-grab active:cursor-grabbing group"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
     >
       <div className="flex justify-between items-start mb-1.5">
         <div className="flex items-center gap-1.5">
-          <h4 className="text-[10px] font-bold text-slate-100 uppercase tracking-tight group-hover:text-white truncate max-w-[90px]">{lead.name}</h4>
+          <h4 className="text-[10px] font-bold uppercase tracking-tight group-hover:opacity-80 truncate max-w-[90px]" style={{ color: 'var(--text-primary)' }}>{lead.name}</h4>
           <span className={`px-1 py-0.5 rounded text-[7px] font-bold uppercase tracking-wider ${lead.status === 'activo' ? 'bg-emerald-500/20 text-emerald-400' :
-              lead.status === 'inactivo' ? 'bg-slate-500/20 text-slate-400' :
-                lead.status === 'pausado' ? 'bg-amber-500/20 text-amber-400' :
-                  lead.status === 'convertido' ? 'bg-blue-500/20 text-blue-400' :
-                    lead.status === 'perdido' ? 'bg-rose-500/20 text-rose-400' :
-                      'bg-purple-500/20 text-purple-400'
+            lead.status === 'inactivo' ? 'bg-slate-500/20 text-slate-400' :
+              lead.status === 'pausado' ? 'bg-amber-500/20 text-amber-400' :
+                lead.status === 'convertido' ? 'bg-blue-500/20 text-blue-400' :
+                  lead.status === 'perdido' ? 'bg-rose-500/20 text-rose-400' :
+                    'bg-purple-500/20 text-purple-400'
             }`}>{lead.status || 'nuevo'}</span>
         </div>
         <button
@@ -54,10 +55,10 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onOpenLead, onToggleChatbot }
       </div>
 
       <div className="space-y-1 mb-2.5">
-        <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 tracking-wider">
+        <div className="flex items-center gap-1.5 text-[9px] font-bold tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
           <Phone size={9} className="text-purple-500" /> <span>{lead.phone}</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[8px] text-slate-500 uppercase font-semibold">
+        <div className="flex items-center gap-1.5 text-[8px] uppercase font-semibold" style={{ color: 'var(--text-muted)' }}>
           <Clock size={9} /> <span className="truncate tracking-tight">Interés: {lead.interest || 'No especificado'}</span>
         </div>
         <div className="text-[11px] font-bold text-emerald-400 mt-1 tracking-tighter uppercase">
@@ -72,7 +73,7 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onOpenLead, onToggleChatbot }
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
+      <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: 'var(--border-color)' }}>
         <div className="flex gap-1.5">
           <button
             onClick={(e) => {
@@ -88,7 +89,8 @@ const LeadCard: React.FC<LeadCardProps> = ({ lead, onOpenLead, onToggleChatbot }
               e.stopPropagation();
               onToggleChatbot(lead.id, !lead.chatbot_enabled);
             }}
-            className={`px-1.5 py-0.5 rounded-lg transition-all flex items-center gap-1 border ${lead.chatbot_enabled ? 'bg-purple-500/20 border-purple-500/30 text-purple-400' : 'bg-slate-700 border-slate-600 text-slate-400 hover:bg-slate-600'}`}
+            className={`px-1.5 py-0.5 rounded-lg transition-all flex items-center gap-1 border ${lead.chatbot_enabled ? 'bg-purple-500/20 border-purple-500/30 text-purple-400' : 'border-opacity-50'}`}
+            style={!lead.chatbot_enabled ? { backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-color)', color: 'var(--text-muted)' } : {}}
           >
             <Bot size={11} />
             <span className="text-[7px] font-bold uppercase tracking-widest">{lead.chatbot_enabled ? 'AI' : 'OFF'}</span>

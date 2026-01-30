@@ -114,12 +114,12 @@ const SalesPage: React.FC<SalesPageProps> = ({ state, onAddSale, onUpdateSale, o
     <div className="space-y-4 animate-in fade-in duration-500 pb-10">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-1">
         <div>
-          <h1 className="text-lg font-bold text-white tracking-tight uppercase">Control <span className="primary-gradient-text">Financiero PEN</span></h1>
-          <p className="text-slate-500 text-[9px] font-semibold uppercase tracking-[0.2em] opacity-60 leading-none">Análisis consolidado</p>
+          <h1 className="text-lg font-bold tracking-tight uppercase" style={{ color: 'var(--text-primary)' }}>Control <span className="primary-gradient-text">Financiero PEN</span></h1>
+          <p className="text-[9px] font-semibold uppercase tracking-[0.2em] opacity-60 leading-none" style={{ color: 'var(--text-muted)' }}>Análisis consolidado</p>
         </div>
-        <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-0.5 shadow-lg">
-          <button onClick={() => setActiveSubTab('cierres')} className={`px-4 py-1.5 rounded-lg text-[8px] font-bold uppercase tracking-widest transition-all ${activeSubTab === 'cierres' ? 'bg-indigo-600 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}>Cierres</button>
-          <button onClick={() => setActiveSubTab('caja')} className={`px-4 py-1.5 rounded-lg text-[8px] font-bold uppercase tracking-widest transition-all ${activeSubTab === 'caja' ? 'bg-indigo-600 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}>Caja (PEN)</button>
+        <div className="flex rounded-xl p-0.5 shadow-lg" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+          <button onClick={() => setActiveSubTab('cierres')} className={`px-4 py-1.5 rounded-lg text-[8px] font-bold uppercase tracking-widest transition-all ${activeSubTab === 'cierres' ? 'bg-indigo-600 text-white shadow' : ''}`} style={activeSubTab !== 'cierres' ? { color: 'var(--text-muted)' } : {}}>Cierres</button>
+          <button onClick={() => setActiveSubTab('caja')} className={`px-4 py-1.5 rounded-lg text-[8px] font-bold uppercase tracking-widest transition-all ${activeSubTab === 'caja' ? 'bg-indigo-600 text-white shadow' : ''}`} style={activeSubTab !== 'caja' ? { color: 'var(--text-muted)' } : {}}>Caja (PEN)</button>
         </div>
       </header>
 
@@ -152,41 +152,42 @@ const SalesPage: React.FC<SalesPageProps> = ({ state, onAddSale, onUpdateSale, o
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div className="bg-slate-900/50 border border-slate-800/50 p-3 rounded-xl border-l-4 border-l-indigo-500 shadow-xl backdrop-blur-sm">
-          <p className="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-1">Caja Neta Consolidada</p>
-          <p className="text-xl font-bold text-white tracking-tighter">S/ {balancePEN.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+        <div className="p-3 rounded-xl border-l-4 border-l-indigo-500 shadow-xl backdrop-blur-sm" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderLeftColor: 'rgb(99 102 241)' }}>
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Caja Neta Consolidada</p>
+          <p className="text-xl font-bold tracking-tighter" style={{ color: 'var(--text-primary)' }}>S/ {balancePEN.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
           <div className="flex items-center gap-1 text-emerald-400 text-[8px] mt-0.5 font-bold uppercase">
             <TrendingUp size={10} /> <span>Utilidad Operativa</span>
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800/50 p-3 rounded-xl shadow-xl backdrop-blur-sm">
-          <p className="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-1">Ingresos (Comisiones)</p>
+        <div className="p-3 rounded-xl shadow-xl backdrop-blur-sm" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Ingresos (Comisiones)</p>
           <p className="text-lg font-bold text-emerald-400 tracking-tighter">S/ {totalIncomePEN.toLocaleString()}</p>
-          <p className="text-slate-600 text-[8px] mt-0.5 font-bold uppercase tracking-widest">Tipo de Cambio Actual</p>
+          <p className="text-[8px] mt-0.5 font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Tipo de Cambio Actual</p>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800/50 p-3 rounded-xl shadow-xl border-r-4 border-r-rose-500 backdrop-blur-sm">
-          <p className="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-1">Egresos / Gastos</p>
+        <div className="p-3 rounded-xl shadow-xl border-r-4 border-r-rose-500 backdrop-blur-sm" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRightColor: 'rgb(244 63 94)' }}>
+          <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Egresos / Gastos</p>
           <p className="text-lg font-bold text-rose-400 tracking-tighter">S/ {totalExpensePEN.toLocaleString()}</p>
-          <p className="text-slate-600 text-[8px] mt-0.5 font-bold uppercase tracking-widest">Marketing y Operativo</p>
+          <p className="text-[8px] mt-0.5 font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Marketing y Operativo</p>
         </div>
       </div>
 
-      <div className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-        <div className="p-2 border-b border-slate-800 flex flex-wrap gap-2 items-center justify-between bg-slate-900/40">
+      <div className="rounded-xl overflow-hidden shadow-2xl" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
+        <div className="p-2 border-b flex flex-wrap gap-2 items-center justify-between" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-secondary)' }}>
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={13} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={13} style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
               placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 pl-9 pr-3 outline-none text-[10px] font-semibold text-slate-200 focus:border-indigo-500 transition-all"
+              className="w-full rounded-lg py-1.5 pl-9 pr-3 outline-none text-[10px] font-semibold focus:border-indigo-500 transition-all"
+              style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
             />
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowFilters(!showFilters)} className={`p-2 rounded-lg border transition-all ${showFilters ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' : 'bg-slate-950 text-slate-500 border-slate-800 hover:text-white'}`}>
+            <button onClick={() => setShowFilters(!showFilters)} className={`p-2 rounded-lg border transition-all ${showFilters ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' : ''}`} style={!showFilters ? { backgroundColor: 'var(--bg-input)', borderColor: 'var(--border-color)', color: 'var(--text-muted)' } : {}}>
               <SlidersHorizontal size={14} />
             </button>
             <button
@@ -226,7 +227,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ state, onAddSale, onUpdateSale, o
           {activeSubTab === 'cierres' ? (
             <table className="w-full text-left text-[10px]">
               <thead>
-                <tr className="bg-slate-900 text-slate-500 text-[8px] font-bold uppercase tracking-[0.2em] border-b border-slate-800">
+                <tr className="text-[8px] font-bold uppercase tracking-[0.2em] border-b" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}>
                   <th className="px-4 py-3">Fecha</th>
                   <th className="px-4 py-3">Prospecto / Unidad</th>
                   <th className="px-4 py-3">Monto Venta</th>
@@ -235,7 +236,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ state, onAddSale, onUpdateSale, o
                   <th className="px-4 py-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/40">
+              <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
                 {filteredSales.map((sale) => {
                   const lead = state.leads.find(l => l.id === sale.lead_id);
                   const currencySym = sale.currency === 'USD' ? '$' : 'S/';
@@ -245,22 +246,22 @@ const SalesPage: React.FC<SalesPageProps> = ({ state, onAddSale, onUpdateSale, o
                   return (
                     <tr key={sale.id} className="hover:bg-indigo-500/5 transition-colors group">
                       <td className="px-4 py-2">
-                        <p className="font-bold text-slate-400 text-[10px] whitespace-nowrap">{new Date(sale.created_at).toLocaleDateString()}</p>
+                        <p className="font-bold text-[10px] whitespace-nowrap" style={{ color: 'var(--text-secondary)' }}>{new Date(sale.created_at).toLocaleDateString()}</p>
                       </td>
                       <td className="px-4 py-2">
-                        <p className="font-bold text-slate-100 uppercase leading-none text-[11px] truncate max-w-[150px]">{lead?.name || 'S/N'}</p>
-                        <p className="text-[8px] text-slate-600 font-bold uppercase mt-0.5">ID: {sale.id.slice(0, 6)}</p>
+                        <p className="font-bold uppercase leading-none text-[11px] truncate max-w-[150px]" style={{ color: 'var(--text-primary)' }}>{lead?.name || 'S/N'}</p>
+                        <p className="text-[8px] font-bold uppercase mt-0.5" style={{ color: 'var(--text-muted)' }}>ID: {sale.id.slice(0, 6)}</p>
                       </td>
                       <td className="px-4 py-2">
-                        <span className="font-bold text-slate-300 text-[11px]">{currencySym}{sale.sale_amount.toLocaleString()}</span>
+                        <span className="font-bold text-[11px]" style={{ color: 'var(--text-secondary)' }}>{currencySym}{sale.sale_amount.toLocaleString()}</span>
                       </td>
                       <td className="px-4 py-2">
                         <span className="bg-indigo-500/10 text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-500/20 font-bold text-[10px]">{sale.commission_percentage}%</span>
                       </td>
                       <td className="px-4 py-2">
                         <div className="flex flex-col">
-                          <span className="font-bold text-white text-[11px]">S/ {utilPEN.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                          <span className="text-[7px] text-slate-600 font-bold uppercase leading-none mt-0.5">TC {sale.exchange_rate}</span>
+                          <span className="font-bold text-[11px]" style={{ color: 'var(--text-primary)' }}>S/ {utilPEN.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                          <span className="text-[7px] font-bold uppercase leading-none mt-0.5" style={{ color: 'var(--text-muted)' }}>TC {sale.exchange_rate}</span>
                         </div>
                       </td>
                       <td className="px-4 py-2 text-right">
@@ -277,7 +278,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ state, onAddSale, onUpdateSale, o
           ) : (
             <table className="w-full text-left text-[10px]">
               <thead>
-                <tr className="bg-slate-900 text-slate-500 text-[8px] font-bold uppercase tracking-[0.2em] border-b border-slate-800">
+                <tr className="text-[8px] font-bold uppercase tracking-[0.2em] border-b" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}>
                   <th className="px-4 py-3">Fecha / Cat</th>
                   <th className="px-4 py-3">Descripción</th>
                   <th className="px-4 py-3">Importe</th>
@@ -285,7 +286,7 @@ const SalesPage: React.FC<SalesPageProps> = ({ state, onAddSale, onUpdateSale, o
                   <th className="px-4 py-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/40">
+              <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
                 {filteredCash.map((m) => (
                   <tr key={m.id} className="hover:bg-indigo-500/5 transition-colors group">
                     <td className="px-4 py-2">
@@ -363,42 +364,42 @@ const CashMovementModal = ({ onClose, onAdd }: any) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-xs rounded-xl overflow-hidden shadow-2xl">
-        <header className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-          <h2 className="text-[10px] font-bold text-white uppercase tracking-widest">Nuevo Movimiento</h2>
-          <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors"><X size={16} /></button>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+      <div className="w-full max-w-xs rounded-xl overflow-hidden shadow-2xl" style={{ backgroundColor: 'var(--modal-bg)', border: '1px solid var(--border-color)' }}>
+        <header className="p-4 border-b flex justify-between items-center" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
+          <h2 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Nuevo Movimiento</h2>
+          <button onClick={onClose} className="transition-colors" style={{ color: 'var(--text-muted)' }}><X size={16} /></button>
         </header>
         <div className="p-4 space-y-3">
-          <div className="flex bg-slate-950 p-0.5 rounded-lg border border-slate-800">
-            <button onClick={() => setData({ ...data, type: 'ingreso' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.type === 'ingreso' ? 'bg-emerald-600 text-white' : 'text-slate-600'}`}>Ingreso</button>
-            <button onClick={() => setData({ ...data, type: 'egreso' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.type === 'egreso' ? 'bg-rose-600 text-white' : 'text-slate-600'}`}>Egreso</button>
+          <div className="flex p-0.5 rounded-lg" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+            <button onClick={() => setData({ ...data, type: 'ingreso' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.type === 'ingreso' ? 'bg-emerald-600 text-white' : ''}`} style={data.type !== 'ingreso' ? { color: 'var(--text-muted)' } : {}}>Ingreso</button>
+            <button onClick={() => setData({ ...data, type: 'egreso' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.type === 'egreso' ? 'bg-rose-600 text-white' : ''}`} style={data.type !== 'egreso' ? { color: 'var(--text-muted)' } : {}}>Egreso</button>
           </div>
 
-          <div className="flex bg-slate-950 p-0.5 rounded-lg border border-slate-800">
-            <button onClick={() => setData({ ...data, currency: 'USD' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.currency === 'USD' ? 'bg-indigo-600 text-white' : 'text-slate-600'}`}>$ USD</button>
-            <button onClick={() => setData({ ...data, currency: 'PEN' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.currency === 'PEN' ? 'bg-indigo-600 text-white' : 'text-slate-600'}`}>S/ PEN</button>
+          <div className="flex p-0.5 rounded-lg" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+            <button onClick={() => setData({ ...data, currency: 'USD' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.currency === 'USD' ? 'bg-indigo-600 text-white' : ''}`} style={data.currency !== 'USD' ? { color: 'var(--text-muted)' } : {}}>$ USD</button>
+            <button onClick={() => setData({ ...data, currency: 'PEN' })} className={`flex-1 py-1.5 rounded-md text-[8px] font-bold uppercase transition-all ${data.currency === 'PEN' ? 'bg-indigo-600 text-white' : ''}`} style={data.currency !== 'PEN' ? { color: 'var(--text-muted)' } : {}}>S/ PEN</button>
           </div>
 
           <div className="space-y-2">
-            <input placeholder="Categoría" value={data.category} onChange={e => setData({ ...data, category: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-[10px] font-semibold text-slate-200 focus:border-indigo-500 outline-none" />
-            <textarea placeholder="Descripción..." value={data.description} onChange={e => setData({ ...data, description: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-[10px] h-14 resize-none text-slate-400 outline-none font-medium" />
+            <input placeholder="Categoría" value={data.category} onChange={e => setData({ ...data, category: e.target.value })} className="w-full rounded-lg py-2 px-3 text-[10px] font-semibold focus:border-indigo-500 outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
+            <textarea placeholder="Descripción..." value={data.description} onChange={e => setData({ ...data, description: e.target.value })} className="w-full rounded-lg py-2 px-3 text-[10px] h-14 resize-none outline-none font-medium" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }} />
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label className="text-[7px] font-bold text-slate-600 uppercase tracking-widest pl-1">Monto</label>
-                <input type="number" value={data.amount_input} onChange={e => setData({ ...data, amount_input: Number(e.target.value) })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2 text-[11px] font-bold text-white focus:border-indigo-500 outline-none" />
+                <label className="text-[7px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Monto</label>
+                <input type="number" value={data.amount_input} onChange={e => setData({ ...data, amount_input: Number(e.target.value) })} className="w-full rounded-lg py-1.5 px-2 text-[11px] font-bold focus:border-indigo-500 outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
               </div>
               <div className="space-y-1">
-                <label className="text-[7px] font-bold text-slate-600 uppercase tracking-widest pl-1">T. Cambio</label>
-                <input type="number" step="0.01" value={data.exchange_rate} onChange={e => setData({ ...data, exchange_rate: Number(e.target.value) })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2 text-[11px] font-bold text-indigo-400 focus:border-indigo-500 outline-none" />
+                <label className="text-[7px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>T. Cambio</label>
+                <input type="number" step="0.01" value={data.exchange_rate} onChange={e => setData({ ...data, exchange_rate: Number(e.target.value) })} className="w-full rounded-lg py-1.5 px-2 text-[11px] font-bold text-indigo-600 focus:border-indigo-500 outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }} />
               </div>
             </div>
           </div>
 
-          <div className="p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-lg flex flex-col items-center">
-            <span className="text-[7px] font-bold text-indigo-400/60 uppercase mb-1 tracking-[0.2em]">Equivalente PEN</span>
-            <span className="text-xl font-bold text-white tracking-tighter">S/ {getPenAmount().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          <div className="p-3 rounded-lg flex flex-col items-center" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+            <span className="text-[7px] font-bold text-indigo-500 uppercase mb-1 tracking-[0.2em]">Equivalente PEN</span>
+            <span className="text-xl font-bold tracking-tighter" style={{ color: 'var(--text-primary)' }}>S/ {getPenAmount().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
           </div>
 
           <button

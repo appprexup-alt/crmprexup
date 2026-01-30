@@ -14,24 +14,48 @@ interface DashboardProps {
 
 const KPICard = ({ title, value, icon: Icon, colorClass, footer, compact = false }: { title: string, value: string | number, icon: React.ElementType, colorClass: string, footer: string, compact?: boolean }) => {
   const color = colorClass.replace('bg-', '').replace('-500', '');
+  // Colores vibrantes con gradientes y sombras que resaltan en modo claro
   const styles: any = {
-    purple: 'bg-purple-500/10 border-purple-500/40 text-purple-300 shadow-purple-500/20',
-    amber: 'bg-amber-500/10 border-amber-500/40 text-amber-300 shadow-amber-500/20',
-    pink: 'bg-pink-500/10 border-pink-500/40 text-pink-300 shadow-pink-500/20',
-    emerald: 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300 shadow-emerald-500/20',
+    purple: {
+      iconBg: 'bg-gradient-to-br from-purple-500 to-violet-600',
+      iconText: 'text-white',
+      shadow: 'shadow-purple-500/30',
+      accent: 'border-l-purple-500'
+    },
+    amber: {
+      iconBg: 'bg-gradient-to-br from-amber-400 to-orange-500',
+      iconText: 'text-white',
+      shadow: 'shadow-amber-500/30',
+      accent: 'border-l-amber-500'
+    },
+    pink: {
+      iconBg: 'bg-gradient-to-br from-pink-500 to-rose-600',
+      iconText: 'text-white',
+      shadow: 'shadow-pink-500/30',
+      accent: 'border-l-pink-500'
+    },
+    emerald: {
+      iconBg: 'bg-gradient-to-br from-emerald-400 to-teal-600',
+      iconText: 'text-white',
+      shadow: 'shadow-emerald-500/30',
+      accent: 'border-l-emerald-500'
+    },
   };
-  const currentStyle = styles[color] || 'bg-slate-800 border-slate-700 text-slate-300';
+  const currentStyle = styles[color] || { iconBg: 'bg-slate-600', iconText: 'text-white', shadow: '', accent: 'border-l-slate-500' };
 
   return (
-    <div className={`bg-slate-900/60 border border-slate-800 rounded-2xl shadow-xl hover:border-slate-700 transition-all group relative overflow-hidden ${compact ? 'p-3' : 'p-4'}`}>
+    <div
+      className={`border border-l-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden ${currentStyle.accent} ${currentStyle.shadow} ${compact ? 'p-3' : 'p-4'}`}
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
+    >
       <div className="flex justify-between items-start mb-3">
-        <div className={`rounded-xl border shadow-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${currentStyle} ${compact ? 'w-9 h-9' : 'w-10 h-10'}`}>
+        <div className={`rounded-xl shadow-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${currentStyle.iconBg} ${currentStyle.iconText} ${compact ? 'w-10 h-10' : 'w-11 h-11'}`}>
           <Icon className={compact ? 'w-[18px] h-[18px]' : 'w-5 h-5'} strokeWidth={2.5} />
         </div>
       </div>
-      <p className={`font-black text-white tracking-tighter ${compact ? 'text-2xl' : 'text-3xl'}`}>{value}</p>
-      <h3 className={`text-slate-400 font-bold uppercase tracking-[0.2em] mt-1 ${compact ? 'text-[8px]' : 'text-[9px]'}`}>{title}</h3>
-      <p className={`text-slate-500 font-bold uppercase tracking-wider mt-3 pt-2 border-t border-slate-800/50 ${compact ? 'text-[7px]' : 'text-[8px]'}`}>{footer}</p>
+      <p className={`font-black tracking-tighter ${compact ? 'text-2xl' : 'text-3xl'}`} style={{ color: 'var(--text-primary)' }}>{value}</p>
+      <h3 className={`font-bold uppercase tracking-[0.15em] mt-1 ${compact ? 'text-[8px]' : 'text-[9px]'}`} style={{ color: 'var(--text-secondary)' }}>{title}</h3>
+      <p className={`font-semibold uppercase tracking-wider mt-3 pt-2 border-t ${compact ? 'text-[7px]' : 'text-[8px]'}`} style={{ color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}>{footer}</p>
     </div>
   );
 };
@@ -96,13 +120,14 @@ const Dashboard: React.FC<DashboardProps> = ({ state, onActionClick }) => {
     }));
   }, [state.stages, state.leads]);
 
-  const COLORS = ['#8a3ab9', '#fcc669', '#e94c74', '#10b981', '#8b5cf6', '#3b82f6', '#f59e0b'];
+  // Paleta de colores vibrantes optimizada para modo claro
+  const COLORS = ['#7c3aed', '#f59e0b', '#ec4899', '#10b981', '#6366f1', '#3b82f6', '#ef4444'];
 
   return (
     <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-500 overflow-y-auto custom-scrollbar pr-2 min-h-0 min-w-0">
       <header>
-        <h1 className="text-lg font-bold text-white tracking-tight uppercase">Dashboard <span className="primary-gradient-text">Analítico</span></h1>
-        <p className="text-slate-500 text-[9px] font-semibold uppercase tracking-widest">Inteligencia de Negocio y KPIs</p>
+        <h1 className="text-lg font-bold tracking-tight uppercase" style={{ color: 'var(--text-primary)' }}>Dashboard <span className="primary-gradient-text">Analítico</span></h1>
+        <p className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Inteligencia de Negocio y KPIs</p>
       </header>
 
       <RecommendedActions state={state} onActionClick={onActionClick} />
@@ -115,72 +140,144 @@ const Dashboard: React.FC<DashboardProps> = ({ state, onActionClick }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-0">
-        <div className="bg-slate-900/50 border border-slate-800 p-3 rounded-xl h-[240px] flex flex-col min-h-0 relative">
-          <h3 className="text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-2 mb-2">
-            <BarChart2 size={12} className="text-indigo-400" />
+        <div className="border p-4 rounded-2xl h-[260px] flex flex-col min-h-0 relative shadow-lg" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style={{ color: 'var(--text-primary)' }}>
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+              <BarChart2 size={12} className="text-white" />
+            </div>
             Carga por Asesor
           </h3>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={advisorPerformanceData} margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="name" stroke="#475569" fontSize={8} axisLine={false} tickLine={false} tick={{ textTransform: 'uppercase' }} />
-                <YAxis stroke="#475569" fontSize={9} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip cursor={{ fill: 'rgba(138, 58, 185, 0.1)' }} contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', fontSize: '10px' }} />
-                <Bar dataKey="leads" name="Leads" radius={[4, 4, 0, 0]} barSize={12} fill="#8a3ab9" />
+              <BarChart data={advisorPerformanceData} margin={{ top: 10, right: 20, left: -15, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" vertical={false} />
+                <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={9} axisLine={false} tickLine={false} />
+                <YAxis stroke="var(--text-muted)" fontSize={9} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip
+                  cursor={{ fill: 'rgba(124, 58, 237, 0.08)' }}
+                  contentStyle={{
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                    color: 'var(--text-primary)'
+                  }}
+                />
+                <Bar dataKey="leads" name="Leads" radius={[6, 6, 0, 0]} barSize={24} fill="url(#purpleGradient)" />
+                <defs>
+                  <linearGradient id="purpleGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#7c3aed" />
+                    <stop offset="100%" stopColor="#a855f7" />
+                  </linearGradient>
+                </defs>
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 p-3 rounded-xl h-[240px] flex flex-col min-h-0 relative">
-          <h3 className="text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-2 mb-2">
-            <Award size={12} className="text-indigo-400" />
+        <div className="border p-4 rounded-2xl h-[260px] flex flex-col min-h-0 relative shadow-lg" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style={{ color: 'var(--text-primary)' }}>
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
+              <Award size={12} className="text-white" />
+            </div>
             Eficiencia por Asesor
           </h3>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={advisorPerformanceData} layout="vertical" margin={{ top: 5, right: 30, left: -10, bottom: 5 }}>
+              <BarChart data={advisorPerformanceData} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 10 }}>
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={8} width={50} axisLine={false} tickLine={false} tick={{ textTransform: 'uppercase' }} />
-                <Tooltip cursor={{ fill: 'rgba(15, 23, 42, 0.3)' }} contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', fontSize: '10px' }} />
-                <Bar dataKey="sales" name="Ventas" fill="#10b981" radius={[0, 4, 4, 0]} barSize={8} />
-                <Bar dataKey="leads" name="Leads" fill="#8a3ab9" radius={[0, 4, 4, 0]} barSize={8} />
-                <Legend iconSize={8} wrapperStyle={{ fontSize: '8px', textTransform: 'uppercase', bottom: -10 }} />
+                <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={9} width={55} axisLine={false} tickLine={false} />
+                <Tooltip
+                  cursor={{ fill: 'rgba(16, 185, 129, 0.08)' }}
+                  contentStyle={{
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                    color: 'var(--text-primary)'
+                  }}
+                />
+                <Bar dataKey="sales" name="Ventas" fill="url(#emeraldGradient)" radius={[0, 6, 6, 0]} barSize={10} />
+                <Bar dataKey="leads" name="Leads" fill="url(#purpleGradient2)" radius={[0, 6, 6, 0]} barSize={10} />
+                <Legend iconSize={10} wrapperStyle={{ fontSize: '9px', textTransform: 'uppercase', paddingTop: '8px' }} />
+                <defs>
+                  <linearGradient id="emeraldGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#14b8a6" />
+                  </linearGradient>
+                  <linearGradient id="purpleGradient2" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#7c3aed" />
+                    <stop offset="100%" stopColor="#a855f7" />
+                  </linearGradient>
+                </defs>
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 p-3 rounded-xl h-[240px] flex flex-col min-h-0 relative">
-          <h3 className="text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-2 mb-2">
-            <Share2 size={12} className="text-indigo-400" />
+        <div className="border p-4 rounded-2xl h-[260px] flex flex-col min-h-0 relative shadow-lg" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style={{ color: 'var(--text-primary)' }}>
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <Share2 size={12} className="text-white" />
+            </div>
             Origen de Leads
           </h3>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={leadSourceData} dataKey="value" nameKey="name" cx="50%" cy="45%" innerRadius={30} outerRadius={50} paddingAngle={5} labelLine={false} label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`} className="text-[8px] uppercase font-bold">
+                <Pie
+                  data={leadSourceData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="45%"
+                  innerRadius={35}
+                  outerRadius={55}
+                  paddingAngle={4}
+                  labelLine={false}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  className="text-[9px] font-bold"
+                >
                   {leadSourceData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', fontSize: '10px' }} />
-                <Legend iconSize={8} wrapperStyle={{ fontSize: '8px', textTransform: 'uppercase', bottom: 0, }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                    color: 'var(--text-primary)'
+                  }}
+                />
+                <Legend iconSize={10} wrapperStyle={{ fontSize: '9px', textTransform: 'uppercase', paddingTop: '4px' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 p-3 rounded-xl h-[240px] flex flex-col min-h-0 relative">
-          <h3 className="text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-2 mb-2">
-            <GitCommit size={12} className="text-indigo-400" />
+        <div className="border p-4 rounded-2xl h-[260px] flex flex-col min-h-0 relative shadow-lg" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-3" style={{ color: 'var(--text-primary)' }}>
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <GitCommit size={12} className="text-white" />
+            </div>
             Embudo de Conversión
           </h3>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <FunnelChart>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', fontSize: '10px' }}
-                  itemStyle={{ color: '#fff' }}
+                  contentStyle={{
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                    color: 'var(--text-primary)'
+                  }}
+                  itemStyle={{ color: 'var(--text-primary)' }}
                 />
                 <Funnel
                   dataKey="value"

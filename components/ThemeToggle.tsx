@@ -8,11 +8,15 @@ const ThemeToggle: React.FC = () => {
     return (
         <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg transition-all hover:scale-110 bg-slate-800 dark:bg-slate-800 light:bg-slate-100 border border-slate-700 dark:border-slate-700 light:border-slate-300"
+            className="p-2 rounded-lg transition-all hover:scale-110"
+            style={{
+                backgroundColor: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-color)',
+            }}
             title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
         >
             {theme === 'light' ? (
-                <Moon size={20} className="text-slate-700" />
+                <Moon size={20} style={{ color: 'var(--text-secondary)' }} />
             ) : (
                 <Sun size={20} className="text-yellow-400" />
             )}
@@ -21,3 +25,4 @@ const ThemeToggle: React.FC = () => {
 };
 
 export default ThemeToggle;
+

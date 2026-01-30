@@ -288,34 +288,34 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
           <div className="space-y-4 animate-in slide-in-from-bottom-2 duration-300">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label className="block space-y-1">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Nombre de Marca</span>
-                <input type="text" value={settings.company_name} onChange={e => setSettings({ ...settings, company_name: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 focus:border-purple-500 outline-none transition-all text-[11px] font-semibold text-slate-200" />
+                <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Nombre de Marca</span>
+                <input type="text" value={settings.company_name} onChange={e => setSettings({ ...settings, company_name: e.target.value })} className="w-full rounded-lg py-2 px-3 focus:border-purple-500 outline-none transition-all text-[11px] font-semibold" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
               </label>
               <label className="block space-y-1">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Email de Contacto</span>
-                <input type="email" value={settings.company_email} onChange={e => setSettings({ ...settings, company_email: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 focus:border-purple-500 outline-none transition-all text-[11px] font-semibold text-slate-200" />
+                <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Email de Contacto</span>
+                <input type="email" value={settings.company_email} onChange={e => setSettings({ ...settings, company_email: e.target.value })} className="w-full rounded-lg py-2 px-3 focus:border-purple-500 outline-none transition-all text-[11px] font-semibold" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
               </label>
               <label className="block space-y-1">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Divisa Predeterminada</span>
-                <select value={settings.currency} onChange={e => setSettings({ ...settings, currency: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-[11px] font-bold uppercase text-slate-400 outline-none">
+                <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Divisa Predeterminada</span>
+                <select value={settings.currency} onChange={e => setSettings({ ...settings, currency: e.target.value })} className="w-full rounded-lg py-2 px-3 text-[11px] font-bold uppercase outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                   <option value="USD">Dólares (USD)</option>
                   <option value="PEN">Soles (PEN)</option>
                 </select>
               </label>
               <label className="block space-y-1">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Sitio Web Oficial</span>
-                <input type="text" value={settings.website} onChange={e => setSettings({ ...settings, website: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 focus:border-purple-500 outline-none transition-all text-[11px] font-semibold text-slate-200" />
+                <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Sitio Web Oficial</span>
+                <input type="text" value={settings.website} onChange={e => setSettings({ ...settings, website: e.target.value })} className="w-full rounded-lg py-2 px-3 focus:border-purple-500 outline-none transition-all text-[11px] font-semibold" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
               </label>
             </div>
 
-            <div className="pt-4 border-t border-slate-800/50">
-              <h4 className="text-[10px] font-bold text-white uppercase tracking-widest mb-3">Identidad Visual</h4>
+            <div className="pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--text-primary)' }}>Identidad Visual</h4>
               <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center relative group overflow-hidden shadow-inner">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center relative group overflow-hidden shadow-inner" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
                   {settings.logo_url ? (
                     <img src={settings.logo_url} className="w-full h-full object-contain p-2" alt="Logo" />
                   ) : (
-                    <Building className="text-slate-800" size={20} />
+                    <Building style={{ color: 'var(--text-muted)' }} size={20} />
                   )}
                   <label className="absolute inset-0 bg-slate-900/90 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer backdrop-blur-sm">
                     <Upload size={14} className="text-purple-400 mb-1" />
@@ -324,8 +324,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
                   </label>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-[10px] text-slate-300 font-bold uppercase tracking-tight">Logo del Ecosistema</p>
-                  <p className="text-[8px] text-slate-500 font-semibold leading-tight uppercase tracking-wider">Formato: PNG/SVG Transparente. Máx 1MB.</p>
+                  <p className="text-[10px] font-bold uppercase tracking-tight" style={{ color: 'var(--text-secondary)' }}>Logo del Ecosistema</p>
+                  <p className="text-[8px] font-semibold leading-tight uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Formato: PNG/SVG Transparente. Máx 1MB.</p>
                   {settings.logo_url && (
                     <button onClick={() => setSettings({ ...settings, logo_url: '' })} className="text-[8px] font-bold text-rose-500 hover:text-rose-400 uppercase tracking-widest mt-1">Eliminar Activo</button>
                   )}
@@ -342,21 +342,22 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
               <div className="flex items-center gap-2 text-emerald-400 font-bold uppercase text-[9px] tracking-widest">
                 <MessageSquare size={13} /> Integración WhatsApp Engine
               </div>
-              <div className="bg-slate-950/40 p-4 border border-slate-800 rounded-xl space-y-3 shadow-inner">
+              <div className="p-4 rounded-xl space-y-3 shadow-inner" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
                 <label className="block space-y-1.5">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Webhook URL (Sincronización de Mensajería)</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Webhook URL (Sincronización de Mensajería)</span>
                   <div className="relative">
-                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={13} />
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} size={13} />
                     <input
                       type="text"
                       placeholder="https://n8n.tu-instancia.com/webhook/..."
                       value={settings.webhook_url}
                       onChange={e => setSettings({ ...settings, webhook_url: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg py-2 pl-9 pr-3 text-[10px] font-bold text-purple-400 outline-none focus:border-purple-500"
+                      className="w-full rounded-lg py-2 pl-9 pr-3 text-[10px] font-bold text-purple-500 outline-none focus:border-purple-500"
+                      style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }}
                     />
                   </div>
                 </label>
-                <p className="text-[8px] text-slate-600 font-semibold uppercase tracking-wider leading-relaxed">Conecta tu pipeline de WhatsApp para automatizar la captura de leads desde anuncios o chats orgánicos.</p>
+                <p className="text-[8px] font-semibold uppercase tracking-wider leading-relaxed" style={{ color: 'var(--text-muted)' }}>Conecta tu pipeline de WhatsApp para automatizar la captura de leads desde anuncios o chats orgánicos.</p>
               </div>
             </section>
 
@@ -372,22 +373,22 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
                 )}
               </div>
 
-              <div className="bg-slate-950/40 p-4 border border-slate-800 rounded-xl space-y-4 shadow-inner">
+              <div className="p-4 rounded-xl space-y-4 shadow-inner" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <label className="block space-y-1">
-                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">URL de Evolution API</span>
-                    <input type="text" value={settings.evolution_api_url} onChange={e => setSettings({ ...settings, evolution_api_url: e.target.value })} placeholder="https://api.tu-servidor.com" className="w-full bg-slate-900 border border-slate-800 rounded-lg py-2 px-3 text-[10px] font-bold text-slate-300 outline-none focus:border-indigo-500" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>URL de Evolution API</span>
+                    <input type="text" value={settings.evolution_api_url} onChange={e => setSettings({ ...settings, evolution_api_url: e.target.value })} placeholder="https://api.tu-servidor.com" className="w-full rounded-lg py-2 px-3 text-[10px] font-bold outline-none focus:border-indigo-500" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                   </label>
                   <label className="block space-y-1">
-                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">API Global Key</span>
-                    <input type="password" value={settings.evolution_api_key} onChange={e => setSettings({ ...settings, evolution_api_key: e.target.value })} placeholder="Tu API Key" className="w-full bg-slate-900 border border-slate-800 rounded-lg py-2 px-3 text-[10px] font-bold text-slate-300 outline-none focus:border-indigo-500" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>API Global Key</span>
+                    <input type="password" value={settings.evolution_api_key} onChange={e => setSettings({ ...settings, evolution_api_key: e.target.value })} placeholder="Tu API Key" className="w-full rounded-lg py-2 px-3 text-[10px] font-bold outline-none focus:border-indigo-500" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                   </label>
                   <label className="block space-y-1">
-                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Nombre de Instancia</span>
-                    <input type="text" value={settings.evolution_instance_name} onChange={e => setSettings({ ...settings, evolution_instance_name: e.target.value })} className="w-full bg-slate-900 border border-slate-800 rounded-lg py-2 px-3 text-[10px] font-bold text-slate-300 outline-none focus:border-indigo-500" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Nombre de Instancia</span>
+                    <input type="text" value={settings.evolution_instance_name} onChange={e => setSettings({ ...settings, evolution_instance_name: e.target.value })} className="w-full rounded-lg py-2 px-3 text-[10px] font-bold outline-none focus:border-indigo-500" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                   </label>
                   <div className="flex items-end gap-2">
-                    <button onClick={createEvolutionInstance} className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all">Crear Instancia</button>
+                    <button onClick={createEvolutionInstance} className="flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Crear Instancia</button>
                     <button onClick={fetchQrCode} disabled={isFetchingQr} className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/10">
                       {isFetchingQr ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
                       {isFetchingQr ? 'Cargando...' : 'Generar QR'}
@@ -552,23 +553,24 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
       case 'security':
         return (
           <div className="space-y-4 animate-in slide-in-from-bottom-2 duration-300">
-            <section className="bg-slate-950/40 border border-slate-800 p-4 rounded-xl shadow-inner">
-              <div className="flex items-center gap-2 text-purple-400 font-bold uppercase text-[9px] tracking-widest mb-4">
+            <section className="p-4 rounded-xl shadow-inner" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+              <div className="flex items-center gap-2 text-purple-500 font-bold uppercase text-[9px] tracking-widest mb-4">
                 <KeyRound size={13} /> Credenciales de Acceso
               </div>
               <form onSubmit={handleChangePassword} className="space-y-3">
                 <label className="block space-y-1.5">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-1">Nueva Contraseña</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest px-1" style={{ color: 'var(--text-muted)' }}>Nueva Contraseña</span>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={13} />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} size={13} />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={e => setNewPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-slate-900 border border-slate-800 rounded-lg py-2 pl-9 pr-10 text-[10px] font-bold text-white focus:border-purple-500 outline-none"
+                      className="w-full rounded-lg py-2 pl-9 pr-10 text-[10px] font-bold focus:border-purple-500 outline-none"
+                      style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400">
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }}>
                       {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
                     </button>
                   </div>
@@ -577,26 +579,26 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
               </form>
             </section>
 
-            <div className="bg-slate-950/40 border border-slate-800 p-4 rounded-xl">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold uppercase text-[9px] tracking-widest mb-3">
+            <div className="p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+              <div className="flex items-center gap-2 text-emerald-500 font-bold uppercase text-[9px] tracking-widest mb-3">
                 <Database size={13} /> Auditoría e Infraestructura
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-slate-500 font-bold uppercase tracking-widest">Base de Datos</span>
-                  <span className="text-slate-300 font-bold">Supabase PostgreSQL v15</span>
+                  <span className="font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Base de Datos</span>
+                  <span className="font-bold" style={{ color: 'var(--text-secondary)' }}>Supabase PostgreSQL v15</span>
                 </div>
                 <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-slate-500 font-bold uppercase tracking-widest">Políticas RLS</span>
+                  <span className="font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Políticas RLS</span>
                   <span className="text-emerald-500 font-bold flex items-center gap-1"><CheckCircle2 size={10} /> ACTIVAS</span>
                 </div>
                 <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-slate-500 font-bold uppercase tracking-widest">Auth Protocol</span>
-                  <span className="text-slate-300 font-bold">JWT / OAuth 2.0</span>
+                  <span className="font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Auth Protocol</span>
+                  <span className="font-bold" style={{ color: 'var(--text-secondary)' }}>JWT / OAuth 2.0</span>
                 </div>
               </div>
             </div>
-          </div>
+          </div >
         );
 
       default: return null;
@@ -607,8 +609,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
     <div className="max-w-4xl mx-auto flex flex-col h-full animate-in fade-in duration-500 min-h-0">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 shrink-0">
         <div>
-          <h1 className="text-lg font-bold text-white tracking-tight uppercase">Configuración <span className="primary-gradient-text">Ecosistema</span></h1>
-          <p className="text-slate-500 text-[9px] font-bold uppercase tracking-[0.3em] opacity-60 leading-none mt-1">Gobernanza de recursos SaaS</p>
+          <h1 className="text-lg font-bold tracking-tight uppercase" style={{ color: 'var(--text-primary)' }}>Configuración <span className="primary-gradient-text">Ecosistema</span></h1>
+          <p className="text-[9px] font-bold uppercase tracking-[0.3em] opacity-60 leading-none mt-1" style={{ color: 'var(--text-muted)' }}>Gobernanza de recursos SaaS</p>
         </div>
         <button
           onClick={handleSaveSettings}
@@ -623,13 +625,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onSettingsUpdate, initialSe
       <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0">
         <aside className="w-full md:w-48 space-y-1.5 shrink-0">
           {tabs.map((tab) => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-all border text-[9px] font-bold uppercase tracking-widest ${activeTab === tab.id ? 'bg-purple-500/10 border-purple-500/30 text-purple-400 shadow-xl shadow-purple-500/5' : 'bg-slate-900/20 border-transparent text-slate-500 hover:bg-slate-900/40 hover:text-slate-300'}`}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-all border text-[9px] font-bold uppercase tracking-widest ${activeTab === tab.id ? 'bg-purple-500/10 border-purple-500/30 text-purple-400 shadow-xl shadow-purple-500/5' : 'border-transparent hover:opacity-80'}`} style={activeTab !== tab.id ? { backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)' } : {}}>
               <tab.icon size={16} /> {tab.label}
             </button>
           ))}
         </aside>
 
-        <div className="flex-1 bg-slate-900/20 border border-slate-900/50 p-6 rounded-[2rem] flex flex-col min-h-0 shadow-2xl relative overflow-hidden">
+        <div className="flex-1 border p-6 rounded-[2rem] flex flex-col min-h-0 shadow-2xl relative overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
             {activeTab === 'general' && <Building size={120} />}
             {activeTab === 'automation' && <Bot size={120} />}

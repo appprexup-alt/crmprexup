@@ -78,20 +78,20 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
     <div className="flex flex-col h-full min-h-0 animate-in fade-in duration-500">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 shrink-0">
         <div className="order-1 text-left shrink-0">
-          <h1 className="text-lg font-bold text-white tracking-tight uppercase">CRM <span className="primary-gradient-text">Proyectos</span></h1>
-          <p className="text-slate-500 font-bold text-[9px] uppercase tracking-[0.2em] opacity-80 leading-none">Gestión táctica y AI</p>
+          <h1 className="text-lg font-bold tracking-tight uppercase" style={{ color: 'var(--text-primary)' }}>CRM <span className="primary-gradient-text">Proyectos</span></h1>
+          <p className="font-bold text-[9px] uppercase tracking-[0.2em] opacity-80 leading-none" style={{ color: 'var(--text-muted)' }}>Gestión táctica y AI</p>
         </div>
 
         <div className="flex gap-2 order-2 justify-end items-center">
-          <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-0.5 shadow-inner shrink-0">
-            <button onClick={() => setViewMode('kanban')} className={`p-1.5 rounded-lg transition-all flex items-center justify-center ${viewMode === 'kanban' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>
+          <div className="flex rounded-xl p-0.5 shadow-inner shrink-0" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+            <button onClick={() => setViewMode('kanban')} className={`p-1.5 rounded-lg transition-all flex items-center justify-center ${viewMode === 'kanban' ? 'shadow-sm' : ''}`} style={viewMode === 'kanban' ? { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' } : { color: 'var(--text-muted)' }}>
               <LayoutGrid className="w-[15px] h-[15px]" />
             </button>
-            <button onClick={() => setViewMode('list')} className={`p-1.5 rounded-lg transition-all flex items-center justify-center ${viewMode === 'list' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>
+            <button onClick={() => setViewMode('list')} className={`p-1.5 rounded-lg transition-all flex items-center justify-center ${viewMode === 'list' ? 'shadow-sm' : ''}`} style={viewMode === 'list' ? { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' } : { color: 'var(--text-muted)' }}>
               <List className="w-[15px] h-[15px]" />
             </button>
           </div>
-          <button onClick={() => setShowFilters(!showFilters)} className={`p-1.5 border rounded-xl transition-all flex items-center justify-center shrink-0 ${showFilters ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-slate-800 border-slate-700 text-slate-500 hover:text-white'}`}>
+          <button onClick={() => setShowFilters(!showFilters)} className={`p-1.5 border rounded-xl transition-all flex items-center justify-center shrink-0 ${showFilters ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : ''}`} style={!showFilters ? { backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', color: 'var(--text-muted)' } : {}}>
             <SlidersHorizontal className="w-[15px] h-[15px]" />
           </button>
           <button onClick={() => setShowAddLeadModal(true)} className="p-1.5 primary-gradient rounded-xl text-white shadow-lg flex items-center justify-center shrink-0">
@@ -101,14 +101,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
       </header>
 
       {showFilters && (
-        <div className="bg-slate-900/50 border border-slate-800 p-3 rounded-xl mb-4 space-y-2.5 animate-in slide-in-from-top-2 duration-300 backdrop-blur-md shrink-0">
+        <div className="border p-3 rounded-xl mb-4 space-y-2.5 animate-in slide-in-from-top-2 duration-300 backdrop-blur-md shrink-0" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-            <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar..." className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-3 text-[9px] font-bold outline-none focus:border-indigo-500 text-slate-200" />
-            <select value={filterProject} onChange={(e) => setFilterProject(e.target.value)} className="bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2 text-[9px] font-bold text-slate-400 uppercase outline-none">
+            <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar..." className="w-full rounded-lg py-1.5 px-3 text-[9px] font-bold outline-none focus:border-indigo-500" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
+            <select value={filterProject} onChange={(e) => setFilterProject(e.target.value)} className="rounded-lg py-1.5 px-2 text-[9px] font-bold uppercase outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-tertiary)' }}>
               <option value="all">Proyectos</option>
               {state.projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
-            <select value={filterStage} onChange={(e) => setFilterStage(e.target.value)} className="bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2 text-[9px] font-bold text-slate-400 uppercase outline-none">
+            <select value={filterStage} onChange={(e) => setFilterStage(e.target.value)} className="rounded-lg py-1.5 px-2 text-[9px] font-bold uppercase outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-tertiary)' }}>
               <option value="all">Etapas</option>
               {state.stages.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
@@ -120,11 +120,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
         <div className="flex-1 overflow-x-auto overflow-y-hidden pb-3 custom-scrollbar min-h-0">
           <div className="flex gap-3 h-full min-w-max pr-3">
             {state.stages.map((stage) => (
-              <div key={stage.id} className="w-56 flex flex-col h-full bg-slate-900/20 rounded-xl border border-slate-800/40 p-2 shrink-0" onDragOver={onDragOver} onDrop={(e) => onDrop(e, stage.id)}>
-                <div className="flex items-center justify-between mb-2.5 px-2 py-1.5 bg-slate-900/40 rounded-xl border border-slate-800/30">
+              <div key={stage.id} className="w-56 flex flex-col h-full rounded-xl border p-2 shrink-0" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }} onDragOver={onDragOver} onDrop={(e) => onDrop(e, stage.id)}>
+                <div className="flex items-center justify-between mb-2.5 px-2 py-1.5 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: stage.color }} />
-                    <h3 className="font-bold text-slate-300 uppercase tracking-widest text-[9px] truncate max-w-[90px]">{stage.name}</h3>
+                    <h3 className="font-bold uppercase tracking-widest text-[9px] truncate max-w-[90px]" style={{ color: 'var(--text-secondary)' }}>{stage.name}</h3>
                   </div>
                 </div>
                 <div className="flex-1 space-y-2.5 overflow-y-auto px-0.5 custom-scrollbar">
@@ -137,12 +137,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
           </div>
         </div>
       ) : (
-        <div className="flex-1 overflow-auto bg-slate-900/30 border border-slate-800 rounded-xl shadow-2xl custom-scrollbar min-h-0">
+        <div className="flex-1 overflow-auto border rounded-xl shadow-2xl custom-scrollbar min-h-0" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
           {filteredLeads.length === 0 ? (
             <div className="flex items-center justify-center h-full py-12">
               <div className="text-center">
-                <Target size={48} className="mx-auto text-slate-700 mb-3" />
-                <p className="text-slate-500 font-medium text-[11px]">No hay leads que coincidan con los filtros</p>
+                <Target size={48} className="mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
+                <p className="font-medium text-[11px]" style={{ color: 'var(--text-muted)' }}>No hay leads que coincidan con los filtros</p>
                 <button
                   onClick={() => {
                     setSearchTerm('');
@@ -152,7 +152,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
                     setFilterAdvisor('all');
                     setFilterChatbot('all');
                   }}
-                  className="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[9px] font-bold uppercase transition-all"
+                  className="mt-4 px-4 py-2 rounded-lg text-[9px] font-bold uppercase transition-all"
+                  style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}
                 >
                   Limpiar Filtros
                 </button>
@@ -161,7 +162,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
           ) : (
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="bg-slate-900/80 sticky top-0 z-10 text-slate-500 text-[8px] font-bold uppercase tracking-[0.2em] border-b border-slate-800">
+                <tr className="sticky top-0 z-10 text-[8px] font-bold uppercase tracking-[0.2em] border-b" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}>
                   <th className="px-5 py-4">Prospecto</th>
                   <th className="px-5 py-4">Etapa</th>
                   <th className="px-5 py-4">Inversión</th>
@@ -169,7 +170,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
                   <th className="px-5 py-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
                 {filteredLeads.map(lead => {
                   const stage = state.stages.find(s => s.id === lead.pipeline_stage_id);
                   const project = state.projects.find(p => p.id === lead.project_id);
@@ -177,27 +178,28 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
                     <tr key={lead.id} onClick={() => setSelectedLead(lead)} className="hover:bg-indigo-500/5 transition-all cursor-pointer group">
                       <td className="px-5 py-3">
                         <div>
-                          <p className="text-[10px] font-bold text-slate-100 uppercase leading-none mb-0.5">{lead.name}</p>
-                          <p className="text-slate-500 text-[8px] font-semibold tracking-widest uppercase">{lead.phone}</p>
+                          <p className="text-[10px] font-bold uppercase leading-none mb-0.5" style={{ color: 'var(--text-primary)' }}>{lead.name}</p>
+                          <p className="text-[8px] font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>{lead.phone}</p>
                         </div>
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-1.5">
                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: stage?.color || '#6366f1' }} />
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{stage?.name || 'Sin etapa'}</span>
+                          <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{stage?.name || 'Sin etapa'}</span>
                         </div>
                       </td>
                       <td className="px-5 py-3">
                         <span className="text-[10px] font-bold text-emerald-400 uppercase">{lead.budget_currency === 'USD' ? '$' : 'S/'} {lead.budget?.toLocaleString() || '0'}</span>
                       </td>
                       <td className="px-5 py-3">
-                        <span className="text-[9px] font-bold text-slate-300 uppercase truncate max-w-[120px] inline-block">{project?.name || 'General'}</span>
+                        <span className="text-[9px] font-bold uppercase truncate max-w-[120px] inline-block" style={{ color: 'var(--text-secondary)' }}>{project?.name || 'General'}</span>
                       </td>
                       <td className="px-5 py-3 text-right">
                         <div className="flex items-center justify-end gap-2" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
                           <button
                             onPointerDown={(e) => { e.stopPropagation(); setSelectedLead(lead); }}
-                            className="p-2 bg-slate-800/50 border border-slate-700 text-indigo-400 rounded-lg hover:bg-indigo-500/10 transition-all shadow-inner"
+                            className="p-2 border text-indigo-400 rounded-lg hover:bg-indigo-500/10 transition-all shadow-inner"
+                            style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}
                           >
                             <Edit2 size={12} />
                           </button>
@@ -207,7 +209,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
                               e.preventDefault();
                               onDeleteLead(lead.id);
                             }}
-                            className="p-2 bg-slate-800/50 border border-slate-700 text-rose-500 rounded-lg hover:bg-rose-500/20 transition-all shadow-inner"
+                            className="p-2 border text-rose-500 rounded-lg hover:bg-rose-500/20 transition-all shadow-inner"
+                            style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}
                           >
                             <Trash2 size={12} />
                           </button>
@@ -235,6 +238,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ state, preselectedLeadId, onC
             advisor_id: state.users[0]?.id || null,
             pipeline_stage_id: state.stages[0]?.id || null,
             chatbot_enabled: true,
+            status: 'activo',
             created_at: new Date().toISOString()
           }}
           tasks={state.tasks} projects={state.projects} users={state.users} stages={state.stages} lead_sources={state.lead_sources}

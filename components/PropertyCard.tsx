@@ -42,7 +42,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, project, onDelete
   const StatusIcon = status.icon;
 
   return (
-    <div className={`bg-slate-900/50 border rounded-lg overflow-hidden transition-all group relative ${isSold ? 'border-rose-500/30 opacity-80' : 'border-slate-800 hover:border-slate-700'}`}>
+    <div className={`border rounded-lg overflow-hidden transition-all group relative ${isSold ? 'border-rose-500/30 opacity-80' : 'hover:border-opacity-70'}`} style={{ backgroundColor: 'var(--bg-card)', borderColor: isSold ? undefined : 'var(--border-color)' }}>
       <div className="h-40 bg-slate-800 relative overflow-hidden shrink-0">
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent z-10" />
         <img
@@ -76,16 +76,16 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, project, onDelete
 
       <div className="p-4 space-y-3">
         <div>
-          <h3 className="text-slate-100 font-black text-[11px] truncate uppercase tracking-tight group-hover:text-white transition-colors">
+          <h3 className="font-black text-[11px] truncate uppercase tracking-tight transition-colors" style={{ color: 'var(--text-primary)' }}>
             {property.description}
           </h3>
           <div className="flex flex-col gap-1 mt-1">
-            <div className="flex items-center gap-1.5 text-slate-500 text-[8px] font-bold uppercase tracking-widest">
+            <div className="flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
               <Building size={8} className="text-indigo-500" />
               <span>{project?.name || 'Proyecto'}</span>
             </div>
             {property.location && (
-              <div className="flex items-center gap-1.5 text-slate-400 text-[8px] font-bold uppercase tracking-widest">
+              <div className="flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)' }}>
                 <MapPin size={8} className="text-indigo-400" />
                 <span className="truncate">{property.location}</span>
               </div>
@@ -94,17 +94,17 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, project, onDelete
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-slate-950 border border-slate-800 p-2 rounded-lg flex items-center gap-2">
+          <div className="border p-2 rounded-lg flex items-center gap-2" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
             <Package size={12} className="text-slate-600" />
             <div className="text-[9px]">
-              <p className="text-slate-600 leading-none font-black uppercase tracking-tighter">Metraje</p>
-              <p className="text-slate-300 font-black mt-0.5">{property.area} m²</p>
+              <p className="leading-none font-black uppercase tracking-tighter" style={{ color: 'var(--text-muted)' }}>Metraje</p>
+              <p className="font-black mt-0.5" style={{ color: 'var(--text-secondary)' }}>{property.area} m²</p>
             </div>
           </div>
-          <div className={`bg-slate-950 border p-2 rounded-lg flex items-center gap-2 ${status.border}`}>
+          <div className={`border p-2 rounded-lg flex items-center gap-2 ${status.border}`} style={{ backgroundColor: 'var(--bg-secondary)' }}>
             <StatusIcon size={12} className={status.color.replace('text-', 'text-')} />
             <div className="text-[9px]">
-              <p className="text-slate-600 leading-none font-black uppercase tracking-tighter">Status</p>
+              <p className="leading-none font-black uppercase tracking-tighter" style={{ color: 'var(--text-muted)' }}>Status</p>
               <p className={`font-black mt-0.5 uppercase ${status.color}`}>
                 {status.label}
               </p>

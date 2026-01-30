@@ -50,55 +50,59 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSessionStarted }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-         <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#8a3ab9] rounded-full blur-[120px]"></div>
-         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#fcc669] rounded-full blur-[120px]"></div>
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#8a3ab9] rounded-full blur-[120px]"></div>
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#fcc669] rounded-full blur-[120px]"></div>
       </div>
 
       <div className="w-full max-w-sm z-10 animate-in fade-in zoom-in-95 duration-500">
         <div className="text-center mb-8">
+          {/* Logo or branding */}
           {logoUrl ? (
-            <img src={logoUrl} alt="Prex CRM Logo" className="h-14 object-contain mx-auto mb-4" />
+            <img src={logoUrl} alt="Logo" className="h-20 sm:h-24 object-contain mx-auto mb-4" />
           ) : (
-            <div className="inline-flex p-3 rounded-2xl primary-gradient mb-4 shadow-xl shadow-red-500/10">
-              <Zap size={24} className="text-white" />
-            </div>
+            <>
+              <div className="inline-flex p-3 rounded-2xl primary-gradient mb-4 shadow-xl shadow-red-500/10">
+                <Zap size={24} className="text-white" />
+              </div>
+              <h1 className="text-2xl font-black tracking-tighter italic uppercase" style={{ color: 'var(--text-primary)' }}>Prex<span className="primary-gradient-text">CRM</span></h1>
+              <p className="font-black uppercase tracking-[0.4em] text-[8px] mt-1 opacity-60" style={{ color: 'var(--text-tertiary)' }}>SaaS Realty Ecosystem</p>
+            </>
           )}
-          <h1 className="text-2xl font-black text-white tracking-tighter italic uppercase">Prex<span className="primary-gradient-text">CRM</span></h1>
-          <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[8px] mt-1 opacity-60">SaaS Realty Ecosystem</p>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-xl shadow-2xl">
-          <div className="flex bg-slate-950 p-1 rounded-xl mb-6 border border-slate-800">
-            <button onClick={() => setIsLogin(true)} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${isLogin ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>Ingresar</button>
-            <button onClick={() => setIsLogin(false)} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${!isLogin ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>Registro</button>
+        <div className="border p-6 rounded-3xl backdrop-blur-xl shadow-2xl" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+          <div className="p-1 rounded-xl mb-6 border flex" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
+            <button onClick={() => setIsLogin(true)} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${isLogin ? 'shadow-sm' : ''}`} style={isLogin ? { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' } : { color: 'var(--text-tertiary)' }}>Ingresar</button>
+            <button onClick={() => setIsLogin(false)} className={`flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${!isLogin ? 'shadow-sm' : ''}`} style={!isLogin ? { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' } : { color: 'var(--text-tertiary)' }}>Registro</button>
           </div>
 
           <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Nombre Completo</label>
+                <label className="text-[9px] font-black uppercase tracking-widest px-1" style={{ color: 'var(--text-tertiary)' }}>Nombre Completo</label>
                 <div className="relative">
-                  <input required type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Juan Perez" className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 pl-10 focus:border-purple-500 outline-none transition-all text-[11px] font-bold text-white" />
-                  <LogIn className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" size={14} />
+                  <input required type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Juan Perez" className="w-full rounded-xl py-2.5 px-3 pl-10 focus:border-purple-500 outline-none transition-all text-[11px] font-bold" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
+                  <LogIn className="absolute left-3.5 top-1/2 -translate-y-1/2" size={14} style={{ color: 'var(--text-muted)' }} />
                 </div>
               </div>
             )}
             <div className="space-y-1.5">
-              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Email Corporativo</label>
+              <label className="text-[9px] font-black uppercase tracking-widest px-1" style={{ color: 'var(--text-tertiary)' }}>Email Corporativo</label>
               <div className="relative">
-                <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@tuempresa.com" className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 pl-10 focus:border-purple-500 outline-none transition-all text-[11px] font-bold text-white" />
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" size={14} />
+                <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@tuempresa.com" className="w-full rounded-xl py-2.5 px-3 pl-10 focus:border-purple-500 outline-none transition-all text-[11px] font-bold" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2" size={14} style={{ color: 'var(--text-muted)' }} />
               </div>
             </div>
             <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
-                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Contraseña</label>
+                <label className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--text-tertiary)' }}>Contraseña</label>
               </div>
               <div className="relative">
-                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 pl-10 focus:border-purple-500 outline-none transition-all text-[11px] font-bold text-white" />
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" size={14} />
+                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-xl py-2.5 px-3 pl-10 focus:border-purple-500 outline-none transition-all text-[11px] font-bold" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2" size={14} style={{ color: 'var(--text-muted)' }} />
               </div>
             </div>
             {error && <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-[9px] font-black text-rose-500 uppercase tracking-widest text-center">{error}</div>}
@@ -108,9 +112,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSessionStarted }) => {
             </button>
           </form>
         </div>
-        
-        <div className="mt-8 flex justify-center items-center gap-4 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-default">
-           <div className="flex items-center gap-1.5"><ShieldCheck size={14} /> <span className="text-[9px] font-black uppercase tracking-widest">Supabase Protected</span></div>
+
+        <div className="mt-8 flex justify-center items-center gap-4 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-default" style={{ color: 'var(--text-tertiary)' }}>
+          <div className="flex items-center gap-1.5"><ShieldCheck size={14} /> <span className="text-[9px] font-black uppercase tracking-widest">Supabase Protected</span></div>
         </div>
       </div>
     </div>

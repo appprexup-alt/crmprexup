@@ -42,26 +42,27 @@ const ActionCard: React.FC<ActionCardProps> = ({ action, reason, type, reference
   return (
     <div
       onClick={() => onClick(type, reference_id)}
-      className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl flex items-start gap-4 hover:border-amber-500/30 hover:bg-slate-800/20 transition-all duration-300 cursor-pointer group"
+      className="border p-4 rounded-xl flex items-start gap-4 hover:border-amber-500/30 transition-all duration-300 cursor-pointer group"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
     >
-      <div className="p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-amber-400 group-hover:bg-amber-500/10 group-hover:border-amber-500/20 transition-colors">
+      <div className="p-2.5 border rounded-lg text-amber-400 group-hover:bg-amber-500/10 group-hover:border-amber-500/20 transition-colors" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
         <Icon size={16} />
       </div>
       <div>
-        <h4 className="text-white text-[11px] font-bold uppercase tracking-tight">{action}</h4>
-        <p className="text-slate-500 text-[9px] font-semibold leading-snug mt-1">{reason}</p>
+        <h4 className="text-[11px] font-bold uppercase tracking-tight" style={{ color: 'var(--text-primary)' }}>{action}</h4>
+        <p className="text-[9px] font-semibold leading-snug mt-1" style={{ color: 'var(--text-muted)' }}>{reason}</p>
       </div>
     </div>
   );
 };
 
 const SkeletonCard = () => (
-  <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl flex items-start gap-4 animate-pulse">
-    <div className="w-10 h-10 bg-slate-800 rounded-lg shrink-0"></div>
+  <div className="border p-4 rounded-xl flex items-start gap-4 animate-pulse" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+    <div className="w-10 h-10 rounded-lg shrink-0" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
     <div className="flex-1 space-y-2">
-      <div className="h-3 bg-slate-800 rounded w-3/4"></div>
-      <div className="h-2 bg-slate-800 rounded w-full"></div>
-      <div className="h-2 bg-slate-800 rounded w-1/2"></div>
+      <div className="h-3 rounded w-3/4" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
+      <div className="h-2 rounded w-full" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
+      <div className="h-2 rounded w-1/2" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
     </div>
   </div>
 );
@@ -148,7 +149,7 @@ const RecommendedActions: React.FC<RecommendedActionsProps> = ({ state, onAction
     <section className="mb-4 animate-in slide-in-from-top-2 duration-500">
       <div className="flex items-center gap-2 mb-3">
         <Sparkles size={14} className="text-amber-400" />
-        <h2 className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">Acciones Recomendadas para Hoy</h2>
+        <h2 className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)' }}>Acciones Recomendadas para Hoy</h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {loading ? (

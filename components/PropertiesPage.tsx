@@ -190,20 +190,21 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
             <Tag size={18} />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight uppercase leading-none mb-1">Inventario <span className="primary-gradient-text">Unidades</span></h1>
-            <p className="text-slate-500 font-bold text-[9px] uppercase tracking-[0.2em] opacity-80 leading-none">Gestión de Stock Inmobiliario</p>
+            <h1 className="text-lg font-bold tracking-tight uppercase leading-none mb-1" style={{ color: 'var(--text-primary)' }}>Inventario <span className="primary-gradient-text">Unidades</span></h1>
+            <p className="font-bold text-[9px] uppercase tracking-[0.2em] opacity-80 leading-none" style={{ color: 'var(--text-muted)' }}>Gestión de Stock Inmobiliario</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex bg-slate-900 border border-slate-800 rounded p-0.5 shadow-inner">
-            <button onClick={() => setViewMode('grid')} className={`w-7 h-7 flex items-center justify-center rounded transition-all ${viewMode === 'grid' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}><LayoutGrid size={14} /></button>
-            <button onClick={() => setViewMode('list')} className={`w-7 h-7 flex items-center justify-center rounded transition-all ${viewMode === 'list' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}><List size={14} /></button>
+          <div className="flex rounded p-0.5 shadow-inner" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+            <button onClick={() => setViewMode('grid')} className={`w-7 h-7 flex items-center justify-center rounded transition-all ${viewMode === 'grid' ? 'shadow-sm' : ''}`} style={viewMode === 'grid' ? { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' } : { color: 'var(--text-muted)' }}><LayoutGrid size={14} /></button>
+            <button onClick={() => setViewMode('list')} className={`w-7 h-7 flex items-center justify-center rounded transition-all ${viewMode === 'list' ? 'shadow-sm' : ''}`} style={viewMode === 'list' ? { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' } : { color: 'var(--text-muted)' }}><List size={14} /></button>
           </div>
 
           <button
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            className={`w-8 h-8 flex items-center justify-center rounded border transition-all ${showAdvancedFilters ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-slate-900 border-slate-800 text-slate-500 hover:text-slate-300'}`}
+            className={`w-8 h-8 flex items-center justify-center rounded border transition-all ${showAdvancedFilters ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : ''}`}
+            style={!showAdvancedFilters ? { backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', color: 'var(--text-muted)' } : {}}
             title="Filtros Avanzados"
           >
             <SlidersHorizontal size={14} />
@@ -228,25 +229,25 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
       </header>
 
       {showAdvancedFilters && (
-        <div className="bg-slate-900/50 border border-slate-800 p-3 rounded space-y-3 animate-in slide-in-from-top-1 duration-200 shrink-0">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div className="border p-3 rounded space-y-3 animate-in slide-in-from-top-1 duration-200 shrink-0" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+          <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'var(--border-color)' }}>
             <div className="text-indigo-400 font-bold text-[9px] uppercase tracking-widest flex items-center gap-2">
               <Filter size={10} /> Segmentación Avanzada
             </div>
-            <button onClick={resetFilters} className="text-[8px] font-bold text-slate-500 hover:text-white uppercase tracking-widest flex items-center gap-1.5 transition-colors">
+            <button onClick={resetFilters} className="text-[8px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors" style={{ color: 'var(--text-muted)' }}>
               <RotateCcw size={10} /> Reset
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-600" size={12} />
-              <input type="text" value={filterSearch} onChange={e => setFilterSearch(e.target.value)} placeholder="Descripción..." className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 pl-8 pr-2 text-[9px] font-bold outline-none focus:border-indigo-500" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2" size={12} style={{ color: 'var(--text-muted)' }} />
+              <input type="text" value={filterSearch} onChange={e => setFilterSearch(e.target.value)} placeholder="Descripción..." className="w-full rounded py-1.5 pl-8 pr-2 text-[9px] font-bold outline-none focus:border-indigo-500" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
             </div>
-            <select value={filterProject} onChange={e => setFilterProject(e.target.value)} className="bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-[9px] font-bold text-slate-400 uppercase outline-none">
+            <select value={filterProject} onChange={e => setFilterProject(e.target.value)} className="rounded px-2 py-1.5 text-[9px] font-bold uppercase outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-tertiary)' }}>
               <option value="all">Todos los proyectos</option>
               {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
-            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-[9px] font-bold text-slate-400 uppercase outline-none">
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="rounded px-2 py-1.5 text-[9px] font-bold uppercase outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-tertiary)' }}>
               <option value="all">Cualquier estado</option>
               <option value="disponible">Disponible</option>
               <option value="separado">Separado</option>
@@ -254,14 +255,14 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
               <option value="vendido">Vendido</option>
             </select>
             <div className="grid grid-cols-2 gap-2">
-              <input type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)} placeholder="Precio Mín." className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-2 text-[9px] font-bold outline-none focus:border-indigo-500" />
-              <input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} placeholder="Precio Máx." className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-2 text-[9px] font-bold outline-none focus:border-indigo-500" />
+              <input type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)} placeholder="Precio Mín." className="w-full rounded py-1.5 px-2 text-[9px] font-bold outline-none focus:border-indigo-500" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
+              <input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} placeholder="Precio Máx." className="w-full rounded py-1.5 px-2 text-[9px] font-bold outline-none focus:border-indigo-500" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
             </div>
           </div>
         </div>
       )}
 
-      <div className="flex-1 bg-slate-900/20 border border-slate-800/40 rounded overflow-hidden flex flex-col min-h-0 shadow-lg backdrop-blur-sm">
+      <div className="flex-1 rounded overflow-hidden flex flex-col min-h-0 shadow-lg backdrop-blur-sm" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
         {viewMode === 'grid' ? (
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -285,8 +286,8 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
         ) : (
           <div className="flex-1 overflow-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 z-10 bg-slate-900/80 backdrop-blur-sm border-b border-slate-800">
-                <tr className="text-slate-500 text-[8px] font-bold uppercase tracking-widest">
+              <thead className="sticky top-0 z-10 backdrop-blur-sm border-b" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
+                <tr className="text-[8px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                   <th className="px-4 py-3">Unidad / Ubicación</th>
                   <th className="px-4 py-3">Especificaciones</th>
                   <th className="px-4 py-3 text-right">Precio / m²</th>
@@ -295,7 +296,7 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
                   <th className="px-4 py-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/40">
+              <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
                 {displayProperties.map(property => {
                   const project = projects.find(p => p.id === property.project_id);
                   const status = getStatusBadge(property.status);
@@ -310,11 +311,11 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
                             <StatusIcon size={14} />
                           </div>
                           <div>
-                            <p className="text-[11px] font-bold text-slate-100 uppercase tracking-tight leading-none mb-1">{property.description}</p>
+                            <p className="text-[11px] font-bold uppercase tracking-tight leading-none mb-1" style={{ color: 'var(--text-primary)' }}>{property.description}</p>
                             <div className="flex items-center gap-1.5 mt-0.5">
                               <p className="text-[8px] text-indigo-500 font-bold uppercase tracking-widest">{project?.name || 'S/P'}</p>
                               {property.location && (
-                                <span className="text-slate-600 text-[7px] font-bold uppercase tracking-widest bg-slate-800/50 px-1 rounded border border-slate-700/50">
+                                <span className="text-[7px] font-bold uppercase tracking-widest px-1 rounded border" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-color)' }}>
                                   {property.location}
                                 </span>
                               )}
@@ -324,18 +325,18 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-start gap-2 max-w-[200px]">
-                          <FileText size={10} className="text-slate-600 shrink-0 mt-0.5" />
-                          <p className="text-[10px] text-slate-500 font-medium line-clamp-2" title={property.details}>
+                          <FileText size={10} className="shrink-0 mt-0.5" style={{ color: 'var(--text-muted)' }} />
+                          <p className="text-[10px] font-medium line-clamp-2" style={{ color: 'var(--text-tertiary)' }} title={property.details}>
                             {property.details || 'Sin especificaciones registradas'}
                           </p>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="text-[10px] font-bold text-slate-400">{property.currency === 'USD' ? '$' : 'S/'} {property.area && property.area > 0 ? (property.price / property.area).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</span>
+                        <span className="text-[10px] font-bold" style={{ color: 'var(--text-secondary)' }}>{property.currency === 'USD' ? '$' : 'S/'} {property.area && property.area > 0 ? (property.price / property.area).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="font-bold text-white text-[12px] tracking-tighter leading-none">{property.currency === 'USD' ? '$' : 'S/'} {property.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                        <p className="text-[8px] text-slate-600 font-bold uppercase mt-1">{property.area} m²</p>
+                        <span className="font-bold text-[12px] tracking-tighter leading-none" style={{ color: 'var(--text-primary)' }}>{property.currency === 'USD' ? '$' : 'S/'} {property.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <p className="text-[8px] font-bold uppercase mt-1" style={{ color: 'var(--text-muted)' }}>{property.area} m²</p>
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span className={`px-2 py-0.5 rounded text-[7px] font-bold uppercase tracking-widest border ${status.color}`}>
@@ -345,8 +346,8 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
                       <td className="px-4 py-3 text-right">
                         {!isSold && (
                           <div className="flex justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => { setNewProp(property); setEditingId(property.id); setShowAddModal(true); }} className="p-1.5 bg-slate-800 text-slate-500 hover:text-white rounded border border-slate-700 transition-colors"><Edit2 size={11} /></button>
-                            <button onClick={() => handleDeleteWithConfirmation(property)} className="p-1.5 bg-slate-800 text-slate-500 hover:text-rose-500 rounded border border-slate-700 transition-colors"><Trash2 size={11} /></button>
+                            <button onClick={() => { setNewProp(property); setEditingId(property.id); setShowAddModal(true); }} className="p-1.5 rounded border transition-colors" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}><Edit2 size={11} /></button>
+                            <button onClick={() => handleDeleteWithConfirmation(property)} className="p-1.5 rounded border text-rose-500 transition-colors" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}><Trash2 size={11} /></button>
                           </div>
                         )}
                       </td>
@@ -366,41 +367,42 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-sm rounded overflow-hidden shadow-2xl">
-            <header className="px-5 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+          <div className="w-full max-w-sm rounded-xl overflow-hidden shadow-2xl" style={{ backgroundColor: 'var(--modal-bg)', border: '1px solid var(--border-color)' }}>
+            <header className="px-5 py-4 border-b flex justify-between items-center" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-indigo-500/10 text-indigo-400 rounded flex items-center justify-center shadow-inner"><Maximize2 size={16} /></div>
-                <h2 className="text-[11px] font-bold text-white uppercase tracking-widest">{editingId ? 'Editar Unidad' : 'Nueva Unidad'}</h2>
+                <div className="w-7 h-7 bg-indigo-500/10 text-indigo-500 rounded flex items-center justify-center shadow-inner"><Maximize2 size={16} /></div>
+                <h2 className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>{editingId ? 'Editar Unidad' : 'Nueva Unidad'}</h2>
               </div>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-500 hover:text-white transition-colors"><X size={18} /></button>
+              <button onClick={() => setShowAddModal(false)} className="transition-colors" style={{ color: 'var(--text-muted)' }}><X size={18} /></button>
             </header>
             <form onSubmit={handleAddSubmit} className="p-5 space-y-4">
               <div className="space-y-1.5">
-                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Identificador</label>
-                <input required placeholder="Ej. Dpto 101 Torre A" value={newProp.description} onChange={e => setNewProp({ ...newProp, description: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded py-2 px-3 text-[11px] font-medium outline-none focus:border-indigo-500 transition-all text-slate-200" />
+                <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Identificador</label>
+                <input required placeholder="Ej. Dpto 101 Torre A" value={newProp.description} onChange={e => setNewProp({ ...newProp, description: e.target.value })} className="w-full rounded-lg py-2 px-3 text-[11px] font-medium outline-none focus:border-indigo-500 transition-all" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Ubicación / Dirección</label>
-                <input placeholder="Ej. Av. Larco 123, Miraflores" value={newProp.location || ''} onChange={e => setNewProp({ ...newProp, location: e.target.value })} className="w-full bg-slate-950 border border-slate-800 rounded py-2 px-3 text-[11px] font-medium outline-none focus:border-indigo-500 transition-all text-slate-200" />
+                <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Ubicación / Dirección</label>
+                <input placeholder="Ej. Av. Larco 123, Miraflores" value={newProp.location || ''} onChange={e => setNewProp({ ...newProp, location: e.target.value })} className="w-full rounded-lg py-2 px-3 text-[11px] font-medium outline-none focus:border-indigo-500 transition-all" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Proyecto</label>
+                  <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Proyecto</label>
                   <select
                     value={newProp.project_id || ''}
                     onChange={e => setNewProp({ ...newProp, project_id: e.target.value || null })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded py-2 px-2 text-[10px] font-bold text-slate-400 uppercase outline-none"
+                    className="w-full rounded-lg py-2 px-2 text-[10px] font-bold uppercase outline-none"
+                    style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}
                   >
                     <option value="">-- Seleccionar Proyecto --</option>
                     {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Estado</label>
-                  <select value={newProp.status} onChange={e => setNewProp({ ...newProp, status: e.target.value as any })} className="w-full bg-slate-950 border border-slate-800 rounded py-2 px-2 text-[10px] font-bold text-slate-400 uppercase outline-none">
+                  <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Estado</label>
+                  <select value={newProp.status} onChange={e => setNewProp({ ...newProp, status: e.target.value as any })} className="w-full rounded-lg py-2 px-2 text-[10px] font-bold uppercase outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                     <option value="disponible">Disponible</option>
                     <option value="separado">Separado</option>
                     <option value="bloqueado">Bloqueado</option>
@@ -410,11 +412,12 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Tipo de Propiedad</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Tipo de Propiedad</label>
                 <select
                   value={newProp.property_type || 'terreno'}
                   onChange={e => setNewProp({ ...newProp, property_type: e.target.value as any })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded py-2 px-2 text-[10px] font-bold text-slate-400 uppercase outline-none"
+                  className="w-full rounded-lg py-2 px-2 text-[10px] font-bold uppercase outline-none"
+                  style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}
                 >
                   <option value="terreno">Terreno / Lote</option>
                   <option value="casa">Casa</option>
@@ -425,15 +428,15 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Moneda / Precio</label>
+                  <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Moneda / Precio</label>
                   <div className="flex gap-1">
-                    <select value={newProp.currency} onChange={e => setNewProp({ ...newProp, currency: e.target.value as any })} className="bg-slate-950 border border-slate-800 rounded px-1.5 py-2 text-[9px] font-bold text-slate-500 uppercase outline-none shrink-0"><option value="USD">$</option><option value="PEN">S/</option></select>
-                    <input required type="number" placeholder="0.00" value={newProp.price || ''} onChange={e => setNewProp({ ...newProp, price: Number(e.target.value) })} className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-3 text-[11px] font-bold text-emerald-400 outline-none" />
+                    <select value={newProp.currency} onChange={e => setNewProp({ ...newProp, currency: e.target.value as any })} className="rounded-lg px-1.5 py-2 text-[9px] font-bold uppercase outline-none shrink-0" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}><option value="USD">$</option><option value="PEN">S/</option></select>
+                    <input required type="number" placeholder="0.00" value={newProp.price || ''} onChange={e => setNewProp({ ...newProp, price: Number(e.target.value) })} className="w-full rounded-lg py-1.5 px-3 text-[11px] font-bold text-emerald-600 outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)' }} />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Área (m²)</label>
-                  <input required type="number" placeholder="Ej. 85" value={newProp.area || ''} onChange={e => setNewProp({ ...newProp, area: Number(e.target.value) })} className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-3 text-[11px] font-bold text-slate-300 outline-none" />
+                  <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Área (m²)</label>
+                  <input required type="number" placeholder="Ej. 85" value={newProp.area || ''} onChange={e => setNewProp({ ...newProp, area: Number(e.target.value) })} className="w-full rounded-lg py-1.5 px-3 text-[11px] font-bold outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                 </div>
               </div>
 
@@ -442,24 +445,24 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Habitaciones</label>
-                      <input type="number" placeholder="Ej. 3" value={newProp.bedrooms || ''} onChange={e => setNewProp({ ...newProp, bedrooms: Number(e.target.value) || undefined })} className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-3 text-[11px] font-bold text-slate-300 outline-none" />
+                      <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Habitaciones</label>
+                      <input type="number" placeholder="Ej. 3" value={newProp.bedrooms || ''} onChange={e => setNewProp({ ...newProp, bedrooms: Number(e.target.value) || undefined })} className="w-full rounded-lg py-1.5 px-3 text-[11px] font-bold outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Baños</label>
-                      <input type="number" placeholder="Ej. 2" value={newProp.bathrooms || ''} onChange={e => setNewProp({ ...newProp, bathrooms: Number(e.target.value) || undefined })} className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-3 text-[11px] font-bold text-slate-300 outline-none" />
+                      <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Baños</label>
+                      <input type="number" placeholder="Ej. 2" value={newProp.bathrooms || ''} onChange={e => setNewProp({ ...newProp, bathrooms: Number(e.target.value) || undefined })} className="w-full rounded-lg py-1.5 px-3 text-[11px] font-bold outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Área Construida (m²)</label>
-                      <input type="number" placeholder="Ej. 120" value={newProp.built_area || ''} onChange={e => setNewProp({ ...newProp, built_area: Number(e.target.value) || undefined })} className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-3 text-[11px] font-bold text-slate-300 outline-none" />
+                      <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Área Construida (m²)</label>
+                      <input type="number" placeholder="Ej. 120" value={newProp.built_area || ''} onChange={e => setNewProp({ ...newProp, built_area: Number(e.target.value) || undefined })} className="w-full rounded-lg py-1.5 px-3 text-[11px] font-bold outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                     </div>
                     {newProp.property_type === 'casa' && (
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Pisos</label>
-                        <input type="number" placeholder="Ej. 2" value={newProp.floors || ''} onChange={e => setNewProp({ ...newProp, floors: Number(e.target.value) || undefined })} className="w-full bg-slate-950 border border-slate-800 rounded py-1.5 px-3 text-[11px] font-bold text-slate-300 outline-none" />
+                        <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Pisos</label>
+                        <input type="number" placeholder="Ej. 2" value={newProp.floors || ''} onChange={e => setNewProp({ ...newProp, floors: Number(e.target.value) || undefined })} className="w-full rounded-lg py-1.5 px-3 text-[11px] font-bold outline-none" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
                       </div>
                     )}
                   </div>
@@ -467,12 +470,13 @@ const PropertiesPage: React.FC<PropertiesPageProps> = ({ properties, projects, o
               )}
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest pl-1">Detalles y Especificaciones</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest pl-1" style={{ color: 'var(--text-muted)' }}>Detalles y Especificaciones</label>
                 <textarea
                   placeholder="Ej. Vista al mar, incluye cochera doble, acabados de mármol..."
                   value={newProp.details}
                   onChange={e => setNewProp({ ...newProp, details: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded py-2 px-3 text-[11px] font-medium focus:border-indigo-500 outline-none transition-all text-slate-300 h-20 resize-none shadow-inner"
+                  className="w-full rounded-lg py-2 px-3 text-[11px] font-medium focus:border-indigo-500 outline-none transition-all h-20 resize-none shadow-inner"
+                  style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
                 />
               </div>
 

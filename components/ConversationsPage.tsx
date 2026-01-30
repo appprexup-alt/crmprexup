@@ -151,25 +151,25 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-500">
-            {/* Header Superior similar a otras páginas */}
             <header className="mb-4 shrink-0">
-                <h1 className="text-lg font-bold text-white tracking-tight uppercase">WhatsApp <span className="primary-gradient-text">Omnicanal</span></h1>
-                <p className="text-slate-500 font-bold text-[9px] uppercase tracking-[0.2em] opacity-80 leading-none">Gestión de Mensajería y AI</p>
+                <h1 className="text-lg font-bold tracking-tight uppercase" style={{ color: 'var(--text-primary)' }}>WhatsApp <span className="primary-gradient-text">Omnicanal</span></h1>
+                <p className="font-bold text-[9px] uppercase tracking-[0.2em] opacity-80 leading-none" style={{ color: 'var(--text-muted)' }}>Gestión de Mensajería y AI</p>
             </header>
 
-            <div className="flex-1 flex bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl min-h-0">
+            <div className="flex-1 flex border rounded-2xl overflow-hidden shadow-2xl min-h-0" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
                 {/* SIDEBAR - Lista de conversaciones */}
-                <div className={`${showMobileList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 bg-slate-900/40 border-r border-slate-800/50`}>
+                <div className={`${showMobileList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r`} style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
                     {/* Search */}
-                    <div className="p-4 border-b border-slate-800/50">
+                    <div className="p-4 border-b" style={{ borderColor: 'var(--border-color)' }}>
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={14} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={14} style={{ color: 'var(--text-muted)' }} />
                             <input
                                 type="text"
                                 placeholder="Buscar chat..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-slate-950/50 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-600 outline-none focus:border-pink-500/50 transition-all"
+                                className="w-full rounded-xl pl-9 pr-3 py-2 text-xs placeholder-slate-400 outline-none focus:border-pink-500/50 transition-all"
+                                style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
                             />
                         </div>
                     </div>
@@ -177,7 +177,7 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                     {/* Lista de conversaciones */}
                     <div className="flex-1 overflow-y-auto custom-scrollbar">
                         {filteredLeads.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full text-slate-600 p-8">
+                            <div className="flex flex-col items-center justify-center h-full p-8" style={{ color: 'var(--text-muted)' }}>
                                 <MessageCircle size={40} className="mb-3 opacity-20" />
                                 <p className="text-[10px] font-bold uppercase tracking-widest">Sin chats</p>
                             </div>
@@ -186,8 +186,8 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                                 <button
                                     key={lead.id}
                                     onClick={() => setSelectedLead(lead)}
-                                    className={`w-full p-4 border-b border-slate-800/30 hover:bg-white/5 transition-all text-left ${selectedLead?.id === lead.id ? 'bg-white/5 border-l-2 border-l-pink-500' : ''
-                                        }`}
+                                    className={`w-full p-4 border-b hover:bg-black/5 transition-all text-left ${selectedLead?.id === lead.id ? 'border-l-2 border-l-pink-500' : ''}`}
+                                    style={{ borderBottomColor: 'var(--border-color)', backgroundColor: selectedLead?.id === lead.id ? 'var(--bg-tertiary)' : 'transparent' }}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full primary-gradient flex items-center justify-center text-white font-bold flex-shrink-0 shadow-lg">
@@ -195,12 +195,12 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between mb-0.5">
-                                                <h3 className="font-bold text-slate-200 text-xs truncate">{lead.name}</h3>
-                                                <span className="text-[9px] font-bold text-slate-600 uppercase">
+                                                <h3 className="font-bold text-xs truncate" style={{ color: 'var(--text-primary)' }}>{lead.name}</h3>
+                                                <span className="text-[9px] font-bold uppercase" style={{ color: 'var(--text-muted)' }}>
                                                     {lead.created_at && formatMessageTime(lead.created_at)}
                                                 </span>
                                             </div>
-                                            <p className="text-[10px] text-slate-500 truncate font-medium">
+                                            <p className="text-[10px] truncate font-medium" style={{ color: 'var(--text-tertiary)' }}>
                                                 {getLastMessage(lead)}
                                             </p>
                                         </div>
@@ -212,17 +212,17 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                 </div>
 
                 {/* CHAT WINDOW */}
-                <div className={`${!showMobileList ? 'flex' : 'hidden'} md:flex flex-col flex-1 bg-slate-950/30 backdrop-blur-sm`}>
+                <div className={`${!showMobileList ? 'flex' : 'hidden'} md:flex flex-col flex-1 backdrop-blur-sm`} style={{ backgroundColor: 'var(--bg-card)' }}>
                     {selectedLead ? (
                         <>
                             {/* Chat Header */}
-                            <div className="px-4 py-3 bg-slate-900/40 border-b border-slate-800/50 flex items-center justify-between">
+                            <div className="px-4 py-3 border-b flex items-center justify-between" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
                                 <div className="flex items-center gap-3">
                                     <button
                                         onClick={() => setShowMobileList(true)}
-                                        className="md:hidden p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                                        className="md:hidden p-2 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}
                                     >
-                                        <ArrowLeft size={18} className="text-slate-400" />
+                                        <ArrowLeft size={18} />
                                     </button>
 
                                     <div className="w-9 h-9 rounded-full primary-gradient flex items-center justify-center text-white font-bold shadow-lg">
@@ -230,8 +230,8 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                                     </div>
 
                                     <div>
-                                        <h3 className="font-bold text-slate-100 text-xs">{selectedLead.name}</h3>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{selectedLead.phone}</p>
+                                        <h3 className="font-bold text-xs" style={{ color: 'var(--text-primary)' }}>{selectedLead.name}</h3>
+                                        <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{selectedLead.phone}</p>
                                     </div>
                                 </div>
 
@@ -262,7 +262,7 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                             </div>
 
                             {/* Messages */}
-                            <div className="flex-1 overflow-y-auto p-4 bg-slate-950/20 custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
                                 {loading ? (
                                     <div className="flex items-center justify-center h-full">
                                         <Loader2 className="animate-spin text-pink-500" size={24} />
@@ -288,7 +288,7 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                             </div>
 
                             {/* Input */}
-                            <div className="p-4 bg-slate-900/40 border-t border-slate-800/50">
+                            <div className="p-4 border-t" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
                                 <ChatInput
                                     onSendMessage={handleSendMessage}
                                     disabled={loading}
@@ -296,12 +296,12 @@ const ConversationsPage: React.FC<ConversationsPageProps> = ({ leads, onUpdateLe
                             </div>
                         </>
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-slate-600">
-                            <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4 shadow-2xl">
+                        <div className="flex flex-col items-center justify-center h-full" style={{ color: 'var(--text-muted)' }}>
+                            <div className="w-16 h-16 rounded-3xl border flex items-center justify-center mb-4 shadow-2xl" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
                                 <MessageCircle size={32} className="opacity-20" />
                             </div>
                             <p className="text-xs font-bold uppercase tracking-[0.3em]">Selecciona un chat</p>
-                            <p className="text-[10px] mt-2 text-slate-700 font-medium">Elige una conversación para comenzar</p>
+                            <p className="text-[10px] mt-2 font-medium" style={{ color: 'var(--text-tertiary)' }}>Elige una conversación para comenzar</p>
                         </div>
                     )}
                 </div>

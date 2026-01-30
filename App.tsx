@@ -16,6 +16,7 @@ import { MOCK_DATA } from './constants.tsx';
 import { AppState, Lead, Sale, Task, Property, Project, User, IncomeExpense, PipelineStage, LeadSource } from './types.ts';
 import { Search, Bell, User as UserIcon, Loader2, Database, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from './lib/supabase.ts';
+import ThemeToggle from './components/ThemeToggle.tsx';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -260,11 +261,11 @@ const App: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-slate-950"><Loader2 className="animate-spin text-purple-500" size={40} /></div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}><Loader2 className="animate-spin text-purple-500" size={40} /></div>;
   if (!session && !usingMockData) return <LoginPage onSessionStarted={() => fetchInitialData()} />;
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-50 overflow-hidden font-inter text-xs">
+    <div className="flex min-h-screen overflow-hidden font-inter text-xs" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -280,10 +281,10 @@ const App: React.FC = () => {
           {success && <div className="p-3 md:p-4 bg-emerald-600 text-white rounded-xl font-black text-[9px] md:text-[10px] uppercase pointer-events-auto shadow-2xl border border-white/10">{success}</div>}
         </div>
 
-        <header className="h-12 md:h-16 border-b border-slate-900 bg-slate-950/50 backdrop-blur-md shrink-0 z-40 flex items-center justify-between px-3 md:px-6">
+        <header className="h-12 md:h-16 border-b backdrop-blur-md shrink-0 z-40 flex items-center justify-between px-3 md:px-6" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--header-bg)' }}>
           <div className="flex-1 max-w-sm relative group hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={14} />
-            <input type="text" placeholder="Buscar..." className="w-full bg-slate-900/50 border border-slate-800 rounded-lg py-1.5 pl-9 pr-3 outline-none text-[10px] md:text-[11px] font-bold" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} size={14} />
+            <input type="text" placeholder="Buscar..." className="w-full rounded-lg py-1.5 pl-9 pr-3 outline-none text-[10px] md:text-[11px] font-bold" style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} />
           </div>
           <div className="flex items-center gap-2 md:gap-3 ml-auto">
             {usingMockData && (
@@ -293,6 +294,7 @@ const App: React.FC = () => {
                 <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest">Demo</span>
               </div>
             )}
+            <ThemeToggle />
             <NotificationManager tasks={state.tasks} />
             <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-inner">
               <UserIcon size={14} className="md:hidden" />

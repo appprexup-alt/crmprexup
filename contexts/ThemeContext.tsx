@@ -17,12 +17,14 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     });
 
     useEffect(() => {
-        // Aplicar clase 'dark' al elemento HTML si el tema es oscuro
-        const html = document.documentElement;
-        if (theme === 'dark') {
-            html.classList.add('dark');
+        // Aplicar clase 'light' al body si el tema es claro
+        const body = document.body;
+        if (theme === 'light') {
+            body.classList.add('light');
+            body.classList.remove('dark');
         } else {
-            html.classList.remove('dark');
+            body.classList.add('dark');
+            body.classList.remove('light');
         }
         // Guardar en localStorage
         localStorage.setItem('theme', theme);
