@@ -67,8 +67,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSessionStarted }) => {
               <div className="inline-flex p-3 rounded-2xl primary-gradient mb-4 shadow-xl shadow-red-500/10">
                 <Zap size={24} className="text-white" />
               </div>
-              <h1 className="text-2xl font-black tracking-tighter italic uppercase" style={{ color: 'var(--text-primary)' }}>Prex<span className="primary-gradient-text">CRM</span></h1>
-              <p className="font-black uppercase tracking-[0.4em] text-[8px] mt-1 opacity-60" style={{ color: 'var(--text-tertiary)' }}>SaaS Realty Ecosystem</p>
             </>
           )}
         </div>
